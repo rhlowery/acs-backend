@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title System Context diagram for ACS Backend
+
+Person(user, "Data User", "A user requesting access to data")
+Person(admin, "Data Approver", "An admin approving access requests")
+
+System(acs, "ACS Backend", "Provides access request management and auditing")
+
+System_Ext(databricks, "Databricks", "External data platform")
+System_Ext(uc, "Unity Catalog", "Centralized access control")
+
+Rel(user, acs, "Requests access", "REST/HATEOAS")
+Rel(admin, acs, "Reviews requests", "REST/HATEOAS")
+Rel(acs, databricks, "Proxies calls", "REST")
+Rel(acs, uc, "Checks permissions", "REST")
+
+@enduml

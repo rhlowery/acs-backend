@@ -1,0 +1,47 @@
+@startuml
+package "com.rhlowery.acs.domain" {
+    class AccessRequest {
+        +id: String
+        +requesterId: String
+        +userId: String
+        +catalogName: String
+        +schemaName: String
+        +tableName: String
+        +privileges: List<String>
+        +status: String
+        +createdAt: Long
+        +updatedAt: Long
+        +justification: String
+        +approverGroups: List<String>
+        +metadata: Map<String, Object>
+    }
+
+    class AuditEntry {
+        +id: String
+        +type: String
+        +actor: String
+        +userId: String
+        +timestamp: Long
+        +serverTimestamp: Long
+        +details: Map<String, Object>
+        +signature: String
+        +signer: String
+    }
+}
+
+package "com.rhlowery.acs.service" {
+    interface AccessRequestService {
+        +getAllRequests()
+        +getRequestById()
+        +saveRequests()
+    }
+
+    interface AuditService {
+        +log()
+        +getLogs()
+    }
+}
+
+AccessRequestService ..> AccessRequest
+AuditService ..> AuditEntry
+@enduml
