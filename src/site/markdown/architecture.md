@@ -21,3 +21,13 @@ The core domain entities and their relationships are shown below.
 *   **Security**: SmallRye JWT
 *   **Observability**: SmallRye Health & Micrometer Prometheus
 *   **Testing**: JUnit 5, RestAssured, Cucumber
+
+## Observability
+
+The system implements advanced observability using two key frameworks:
+
+### OpenTelemetry (OTel)
+Used for distributed tracing. Every request to the BFF is automatically traced, providing visibility into the full request lifecycle from the frontend to backend and downstream proxies.
+
+### OpenLineage
+Used for tracking data and process flows. When an access request is submitted, approved, or rejected, a lineage event is emitted to capture the transition of metadata between the user and the Unity Catalog datasets.
