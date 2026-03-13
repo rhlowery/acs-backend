@@ -1,8 +1,27 @@
 # acs-backend
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project provides the backend services for the Access Control System (ACS), including access request management, auditing, and a generic interface for various data catalogs.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Features
+
+- **Generic Catalog Interface**: Traversal and policy overlay for Unity Catalog, AWS Glue, Iceberg, and more via a pluggable SPI.
+- **Access Request Workflow**: Automated submission and approval flow with lineage tracking.
+- **Observability**: Built-in support for OpenTelemetry and OpenLineage.
+- **Security**: JWT integration for secure API access.
+
+## Architecture
+
+Detailed architecture documentation, including C4 and UML diagrams, is available via the Maven site:
+```shell script
+./mvnw site
+```
+
+## Testing
+
+The project uses a TDD approach with Cucumber for BDD testing. To run the tests:
+```shell script
+./mvnw test
+```
 
 ## Running the application in dev mode
 

@@ -12,10 +12,14 @@ System(acs, "ACS Backend", "Provides access request management and auditing")
 
 System_Ext(databricks, "Databricks", "External data platform")
 System_Ext(uc, "Unity Catalog", "Centralized access control")
+System_Ext(glue, "Glue Catalog", "AWS Metadata catalog")
+System_Ext(iceberg, "Iceberg", "Table format catalog")
 
 Rel(user, acs, "Requests access", "REST/HATEOAS")
 Rel(admin, acs, "Reviews requests", "REST/HATEOAS")
 Rel(acs, databricks, "Proxies calls", "REST")
 Rel(acs, uc, "Checks permissions", "REST")
+Rel(acs, glue, "Traverses metadata", "SPI")
+Rel(acs, iceberg, "Traverses metadata", "SPI")
 
 @enduml

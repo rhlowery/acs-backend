@@ -27,6 +27,20 @@ package "com.rhlowery.acs.domain" {
         +signature: String
         +signer: String
     }
+
+    class CatalogNode {
+        +name: String
+        +type: NodeType
+        +path: String
+        +implementation: String
+    }
+
+    enum NodeType {
+        CATALOG
+        SCHEMA
+        TABLE
+        VOLUME
+    }
 }
 
 package "com.rhlowery.acs.service" {
@@ -40,8 +54,28 @@ package "com.rhlowery.acs.service" {
         +log()
         +getLogs()
     }
+
+    interface CatalogProvider {
+        +getCatalogId(): String
+        +getChildren(path): List<CatalogNode>
+        +applyPolicy(path, action, principal)
+        +getEffectivePermissions(path, principal): String
+    }
+}
+
+package "com.rhlowery.acs.resource" {
+    class CatalogResource {
+        +getNodes()
+        +applyPolicy()
+        +getPermissions()
+        +listProviders()
+    }
 }
 
 AccessRequestService ..> AccessRequest
 AuditService ..> AuditEntry
+CatalogResource ..> CatalogProvider
+CatalogResource ..> CatalogNode
+CatalogProvider ..> CatalogNode
+CatalogNode ..> NodeType
 @enduml

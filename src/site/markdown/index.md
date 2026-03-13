@@ -6,6 +6,7 @@ Welcome to the documentation for the ACS Backend. This service provides a HATEOA
 
 *   **RESTful API**: Secure, HATEOAS-compliant resources.
 *   **Security**: JWT-based authentication and authorization.
+*   **Generic Catalog Interface**: Pluggable architecture for traversing Unity Catalog, Glue, Iceberg, and more.
 *   **Observability**: Integrated OpenTelemetry for distributed tracing and OpenLineage for data flow tracking.
 *   **Integrations**: Proxies to Databricks and Unity Catalog APIs.
 *   **Audit**: Complete audit logging of all access-related activities.

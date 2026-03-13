@@ -9,11 +9,10 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import java.util.Map;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.jboss.logging.Logger;
 
+@jakarta.enterprise.context.ApplicationScoped
 @Path("/api")
 @Produces(MediaType.APPLICATION_JSON)
 public class ProxyResource {
@@ -45,32 +44,6 @@ public class ProxyResource {
         }
     }
 
-    @GET
-    @Path("/catalog/search")
-    public Response searchCatalog(
-        @QueryParam("q") String query,
-        @HeaderParam("x-workspace-host") String host
-    ) {
-        String token = "Bearer mock-token";
-        try {
-            Map<String, Object> result = databricksClient.fetchFromUC("tables", token, 1000, null, null, null);
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> allTables = (List<Map<String, Object>>) result.getOrDefault("tables", List.of());
-            
-            String q = query != null ? query.toLowerCase() : "";
-            List<Map<String, Object>> filtered = allTables.stream()
-                .filter(t -> (t.get("name") != null && t.get("name").toString().toLowerCase().contains(q)) ||
-                             (t.get("catalog_name") != null && t.get("catalog_name").toString().toLowerCase().contains(q)) ||
-                             (t.get("schema_name") != null && t.get("schema_name").toString().toLowerCase().contains(q)))
-                .limit(100)
-                .collect(Collectors.toList());
-
-            return Response.ok(Map.of("results", filtered)).build();
-        } catch (Exception e) {
-            LOG.error("Search failed", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "Search failed: " + e.getMessage())).build();
-        }
-    }
 
     @POST
     @Path("/sql/execute")

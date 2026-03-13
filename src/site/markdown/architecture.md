@@ -14,6 +14,22 @@ The core domain entities and their relationships are shown below.
 
 ![Class Diagram](images/classes.png)
 
+## Generic Catalog Interface
+
+The ACS Backend provides a pluggable architecture for interacting with various data catalogs. This is achieved through the `CatalogProvider` SPI (Service Provider Interface).
+
+### Key Components:
+
+*   **CatalogProvider**: The interface that all catalog implementations must satisfy.
+*   **ServiceLoader**: Used to dynamically discover and load available catalog providers at runtime.
+*   **Common Domain**: Unified `CatalogNode` and `NodeType` definitions allow for a consistent experience across different catalog backends.
+
+Available implementations include:
+*   **UnityCatalogNodeProvider**
+*   **GlueNodeProvider**
+*   **DatabricksNodeProvider**
+*   **IcebergNodeProvider**
+
 ## Technical Stack
 
 *   **Runtime**: Quarkus (Java 17)
