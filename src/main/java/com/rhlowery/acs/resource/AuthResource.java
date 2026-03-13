@@ -1,87 +1,90 @@
 package com.rhlowery.acs.resource;
 
 import io.smallrye.jwt.build.Jwt;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.*;
-import java.util.HashSet;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import java.util.Map;
-import java.util.UUID;
-import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import org.jboss.logging.Logger;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import jakarta.inject.Inject;
 
 @Path("/api/auth")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class AuthResource {
+
+    private static final Logger LOG = Logger.getLogger(AuthResource.class);
+
+    @Inject
+    JsonWebToken jwt;
 
     @POST
     @Path("/login")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @PermitAll
     public Response login(Map<String, Object> body) {
-        String userId = (String) body.get("userId");
-        String userName = (String) body.get("userName");
-        String role = (String) body.getOrDefault("role", "STANDARD_USER");
-        @SuppressWarnings("unchecked")
-        List<String> groups = (List<String>) body.getOrDefault("groups", List.of());
-        
-        List<String> permissions = "ADMIN".equals(role) 
-            ? List.of("can_request", "can_approve", "can_audit", "can_configure", "can_manage_users")
-            : List.of("can_request");
+        try {
+            String userId = (String) body.get("userId");
+            if (userId == null || userId.trim().isEmpty()) {
+                return Response.status(400).entity(Map.of("error", "userId is required")).build();
+            }
+            LOG.info("Login request for user: " + userId);
+            String userName = (String) body.getOrDefault("userName", userId);
+            String role = (String) body.getOrDefault("role", "STANDARD_USER");
+            @SuppressWarnings("unchecked")
+            List<String> groups = (List<String>) body.getOrDefault("groups", List.of());
 
-        String token = Jwt.issuer("unity-catalog-acs-bff")
-            .audience("unity-catalog-acs-ui")
-            .subject(userId)
-            .upn(userId)
-            .claim("name", userName)
-            .claim("role", role)
-            .claim("groups", groups)
-            .claim("permissions", permissions)
-            .groups(new HashSet<>(groups))
-            .claim("jti", UUID.randomUUID().toString())
-            .expiresAt(Instant.now().plusSeconds(8 * 3600))
-            .sign();
+            String token = Jwt.issuer("unity-catalog-acs-bff")
+                .upn(userId)
+                .groups(new HashSet<>(groups))
+                .claim("userId", userId)
+                .claim("userName", userName)
+                .claim("role", role)
+                .sign();
 
-        NewCookie bffJwtCookie = new NewCookie.Builder("bff_jwt")
-            .value(token)
+            NewCookie cookie = new NewCookie.Builder("bff_jwt")
+                .value(token)
+                .path("/")
+                .httpOnly(true)
+                .secure(false) 
+                .maxAge(3600)
+                .build();
+
+            LOG.info("Login successful for " + userId + ". Token first chars: " + token.substring(0, Math.min(token.length(), 10)));
+            return Response.ok(Map.of("status", "success", "userId", userId, "role", role))
+                .cookie(cookie)
+                .build();
+        } catch (Exception e) {
+            LOG.error("Error in login", e);
+            return Response.status(500).entity(Map.of("error", e.getMessage())).build();
+        }
+    }
+
+    @POST
+    @Path("/logout")
+    @PermitAll
+    public Response logout() {
+        NewCookie cookie = new NewCookie.Builder("bff_jwt")
+            .value("")
             .path("/")
-            .httpOnly(true)
-            .maxAge(8 * 3600)
+            .maxAge(0)
             .build();
-
-        String csrfToken = UUID.randomUUID().toString();
-        NewCookie csrfCookie = new NewCookie.Builder("csrf_token")
-            .value(csrfToken)
-            .path("/")
-            .httpOnly(false)
-            .maxAge(3600)
-            .build();
-
-        return Response.ok(Map.of(
-            "status", "success",
-            "user", body, // Simplified for now
-            "csrfToken", csrfToken
-        ))
-        .cookie(bffJwtCookie, csrfCookie)
-        .build();
+        return Response.ok(Map.of("status", "logged out")).cookie(cookie).build();
     }
 
     @GET
     @Path("/me")
     public Response me(@Context SecurityContext securityContext) {
         if (securityContext.getUserPrincipal() == null) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            LOG.warn("No principal found in /me");
+            return Response.status(401).entity(Map.of("error", "Not authenticated")).build();
         }
-        // Extract user info from principal
-        return Response.ok(Map.of("user", securityContext.getUserPrincipal().getName())).build();
-    }
-
-    @POST
-    @Path("/logout")
-    public Response logout() {
-        NewCookie bffJwtCookie = new NewCookie.Builder("bff_jwt")
-            .value("")
-            .path("/")
-            .maxAge(0)
-            .build();
-        return Response.ok(Map.of("status", "success")).cookie(bffJwtCookie).build();
+        return Response.ok(Map.of("authenticated", true, "userId", securityContext.getUserPrincipal().getName())).build();
     }
 }

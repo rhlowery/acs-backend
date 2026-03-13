@@ -26,6 +26,6 @@ public interface DatabricksClient {
     @Produces(MediaType.APPLICATION_JSON)
     Map<String, Object> executeSql(
         @HeaderParam("Authorization") String token,
-        Map<String, Object> body
+        com.rhlowery.acs.domain.SqlRequest body
     );
 }

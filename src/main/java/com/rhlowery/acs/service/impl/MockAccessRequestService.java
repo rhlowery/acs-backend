@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 
 public class MockAccessRequestService implements AccessRequestService {
     private final Map<String, AccessRequest> storage = new ConcurrentHashMap<>();
@@ -17,8 +18,8 @@ public class MockAccessRequestService implements AccessRequestService {
             return new ArrayList<>(storage.values());
         }
         return storage.values().stream()
-            .filter(r -> r.requesterId().equals(userId) || 
-                         r.userId().equals(userId) || 
+            .filter(r -> Objects.equals(r.requesterId(), userId) || 
+                         Objects.equals(r.userId(), userId) || 
                          (r.approverGroups() != null && r.approverGroups().stream().anyMatch(groups::contains)))
             .toList();
     }
@@ -31,7 +32,7 @@ public class MockAccessRequestService implements AccessRequestService {
                 AccessRequest newReq = new AccessRequest(
                     req.id(),
                     userId,
-                    req.userId(),
+                    req.userId() != null ? req.userId() : userId,
                     req.catalogName(),
                     req.schemaName(),
                     req.tableName(),
@@ -45,7 +46,7 @@ public class MockAccessRequestService implements AccessRequestService {
                 );
                 storage.put(req.id(), newReq);
             } else {
-                boolean isOwner = existing.requesterId().equals(userId) || existing.userId().equals(userId);
+                boolean isOwner = Objects.equals(existing.requesterId(), userId) || Objects.equals(existing.userId(), userId);
                 if (!isOwner && !isAdmin) {
                     throw new RuntimeException("Forbidden: You do not have permission to update request " + req.id());
                 }
@@ -63,7 +64,7 @@ public class MockAccessRequestService implements AccessRequestService {
                     req.privileges() != null ? req.privileges() : existing.privileges(),
                     status,
                     existing.createdAt(),
-                    System.currentTimeMillis(),
+                    req.updatedAt() != null ? req.updatedAt() : System.currentTimeMillis(),
                     req.justification() != null ? req.justification() : existing.justification(),
                     req.approverGroups() != null ? req.approverGroups() : existing.approverGroups(),
                     req.metadata() != null ? req.metadata() : existing.metadata()

@@ -1,0 +1,722 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.rhlowery.acs:acs-backend >--------------------
+[INFO] Building acs-backend 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact io.quarkus:quarkus-junit5:jar:3.32.3 has been relocated to io.quarkus:quarkus-junit:jar:3.32.3: Update the artifactId in your project build file. Refer to https://github.com/quarkusio/quarkus/wiki/Migration-Guide-3.31 for more information.
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ acs-backend ---
+[INFO] Deleting /Users/loweryr/git/github/rhlowery/acs-backend/target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ acs-backend ---
+[INFO] Copying 5 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- quarkus:3.32.3:generate-code (default) @ acs-backend ---
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ acs-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 20 source files with javac [debug parameters release 17] to target/classes
+[INFO] 
+[INFO] --- quarkus:3.32.3:generate-code-tests (default) @ acs-backend ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ acs-backend ---
+[INFO] Copying 8 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ acs-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 7 source files with javac [debug parameters release 17] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ acs-backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.rhlowery.acs.CucumberTest
+2026-03-13 09:12:02,441 INFO  [org.hibernate.validator.internal.util.Version] (main) HV000001: Hibernate Validator 9.1.0.Final
+2026-03-13 09:12:02,524 WARN  [io.quarkus.config] (main) Unrecognized configuration key "quarkus.smallrye-jwt.token.cookie-name" was provided; it will be ignored; verify that the dependency extension for this configuration is set or that you did not make a typo
+2026-03-13 09:12:02,524 WARN  [io.quarkus.config] (main) Unrecognized configuration key "quarkus.http.cors" was provided; it will be ignored; verify that the dependency extension for this configuration is set or that you did not make a typo
+2026-03-13 09:12:02,524 WARN  [io.quarkus.config] (main) Unrecognized configuration key "quarkus.smallrye-jwt.auth-mechanism-fallback" was provided; it will be ignored; verify that the dependency extension for this configuration is set or that you did not make a typo
+2026-03-13 09:12:02,524 WARN  [io.quarkus.config] (main) Unrecognized configuration key "quarkus.hal.json.enabled" was provided; it will be ignored; verify that the dependency extension for this configuration is set or that you did not make a typo
+2026-03-13 09:12:02,699 WARN  [io.micrometer.core.instrument.MeterRegistry] (main) This Gauge has been already registered (MeterId{name='netty.eventexecutor.workers', tags=[]}), the registration will be ignored. Note that subsequent logs will be logged at debug level.
+2026-03-13 09:12:02,746 INFO  [io.quarkus] (main) acs-backend 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.32.3) started in 1.915s. Listening on: http://localhost:8081
+2026-03-13 09:12:02,746 INFO  [io.quarkus] (main) Profile test activated. 
+2026-03-13 09:12:02,746 INFO  [io.quarkus] (main) Installed features: [cdi, cucumber, hibernate-validator, jacoco, micrometer, opentelemetry, rest, rest-client, rest-client-jackson, rest-jackson, security, smallrye-context-propagation, smallrye-health, smallrye-jwt, smallrye-openapi, swagger-ui, vertx]
+
+Scenario: Submit a new access request                                                                  # features/access-request.feature:6
+2026-03-13 09:12:03,514 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login request for user: alice
+2026-03-13 09:12:03,517 DEBUG [io.smallrye.jwt.util] (executor-thread-1) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:03,553 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login successful for alice. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhbGljZSIsImdyb3VwcyI6WyJjb25zdW1lcnMiXSwidXNlcklkIjoiYWxpY2UiLCJ1c2VyTmFtZSI6ImFsaWNlIiwicm9sZSI6IlNUQU5EQVJEX1VTRVIiLCJpYXQiOjE3NzM0MDc1MjMsImV4cCI6MTc3MzQwNzgyMywianRpIjoiYTMzNzZlOTAtZDhlZi00Zjc4LWI4MjAtOThiNWI4ZTY1ZWQzIn0.SXtwMSiIFnliZISTGTAS_XuCJaPxaN-zqsJJHqaj68M9op1op18fTIbPAaxNjvTF6oemDl4ic0d9MbQMB1BaJ9HOJ_WLShM5UTztUD7OLHAKQ-sIPfiqb4zsHh_dGVHc9y5komkgVUx1vj0yPK-kwPuRJNzpCWRqS5Y0P-xJOqRhX_K8dURQv6ALjSO0j2v4EkmcQYH33EkU00WdM5F4P_AcgBvR5jxtSl2njXgfFQVUkTXrX01XhY0m8D5gYX5TU7VFyiH_tVHA3ouZM8vxtNk89RTfnHozlFkGjHlgL37CujZvSiNCJNW7uK4jZlSbtCzbRrPvJj-zAkz-XesuKQ
+  Given I am authenticated as "alice" with groups "consumers"                                          # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,600 INFO  [io.openlineage.client.OpenLineageClientUtils] (executor-thread-1) Disabled facets: []
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: createRequests
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/json]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhbGljZSIsImdyb3VwcyI6WyJjb25zdW1lcnMiXSwidXNlcklkIjoiYWxpY2UiLCJ1c2VyTmFtZSI6ImFsaWNlIiwicm9sZSI6IlNUQU5EQVJEX1VTRVIiLCJpYXQiOjE3NzM0MDc1MjMsImV4cCI6MTc3MzQwNzgyMywianRpIjoiYTMzNzZlOTAtZDhlZi00Zjc4LWI4MjAtOThiNWI4ZTY1ZWQzIn0.SXtwMSiIFnliZISTGTAS_XuCJaPxaN-zqsJJHqaj68M9op1op18fTIbPAaxNjvTF6oemDl4ic0d9MbQMB1BaJ9HOJ_WLShM5UTztUD7OLHAKQ-sIPfiqb4zsHh_dGVHc9y5komkgVUx1vj0yPK-kwPuRJNzpCWRqS5Y0P-xJOqRhX_K8dURQv6ALjSO0j2v4EkmcQYH33EkU00WdM5F4P_AcgBvR5jxtSl2njXgfFQVUkTXrX01XhY0m8D5gYX5TU7VFyiH_tVHA3ouZM8vxtNk89RTfnHozlFkGjHlgL37CujZvSiNCJNW7uK4jZlSbtCzbRrPvJj-zAkz-XesuKQ]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhbGljZSIsImdyb3VwcyI6WyJjb25zdW1lcnMiXSwidXNlcklkIjoiYWxpY2UiLCJ1c2VyTmFtZSI6ImFsaWNlIiwicm9sZSI6IlNUQU5EQVJEX1VTRVIiLCJpYXQiOjE3NzM0MDc1MjMsImV4cCI6MTc3MzQwNzgyMywianRpIjoiYTMzNzZlOTAtZDhlZi00Zjc4LWI4MjAtOThiNWI4ZTY1ZWQzIn0.SXtwMSiIFnliZISTGTAS_XuCJaPxaN-zqsJJHqaj68M9op1op18fTIbPAaxNjvTF6oemDl4ic0d9MbQMB1BaJ9HOJ_WLShM5UTztUD7OLHAKQ-sIPfiqb4zsHh_dGVHc9y5komkgVUx1vj0yPK-kwPuRJNzpCWRqS5Y0P-xJOqRhX_K8dURQv6ALjSO0j2v4EkmcQYH33EkU00WdM5F4P_AcgBvR5jxtSl2njXgfFQVUkTXrX01XhY0m8D5gYX5TU7VFyiH_tVHA3ouZM8vxtNk89RTfnHozlFkGjHlgL37CujZvSiNCJNW7uK4jZlSbtCzbRrPvJj-zAkz-XesuKQ]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [161]
+2026-03-13 09:12:03,601 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,605 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,608 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$PlatformClassLoader@4cb74ace, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,608 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$AppClassLoader@5ffd2b27, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,608 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=QuarkusClassLoader:Quarkus Base Runtime ClassLoader: TEST for JUnitQuarkusTest-no-profile (QuarkusTest)@79c3f01f, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,608 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=QuarkusClassLoader:Quarkus Runtime ClassLoader: TEST for JUnitQuarkusTest-no-profile (QuarkusTest) restart no:0@65d9e72a, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,608 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$PlatformClassLoader@4cb74ace, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,608 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$AppClassLoader@5ffd2b27, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,609 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=QuarkusClassLoader:Quarkus Base Runtime ClassLoader: TEST for JUnitQuarkusTest-no-profile (QuarkusTest)@79c3f01f, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,609 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$PlatformClassLoader@4cb74ace, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,609 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$AppClassLoader@5ffd2b27, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,609 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=QuarkusClassLoader:Quarkus Base Runtime ClassLoader: TEST for JUnitQuarkusTest-no-profile (QuarkusTest)@79c3f01f, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,610 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=QuarkusClassLoader:Quarkus Runtime ClassLoader: TEST for JUnitQuarkusTest-no-profile (QuarkusTest) restart no:0@65d9e72a, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,610 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$PlatformClassLoader@4cb74ace, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,610 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=jdk.internal.loader.ClassLoaders$AppClassLoader@5ffd2b27, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,610 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08015: loadSpi, cl=QuarkusClassLoader:Quarkus Base Runtime ClassLoader: TEST for JUnitQuarkusTest-no-profile (QuarkusTest)@79c3f01f, u=null, sl=java.util.ServiceLoader[io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory]
+2026-03-13 09:12:03,611 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08019: AuthContextInfo is: JWTAuthContextInfo{publicVerificationKey=null, secretVerificationKey=null, privateDecryptionKey=null, secretDecryptionKey=null, issuedBy='unity-catalog-acs-bff', expGracePeriodSecs=0, maxTimeToLiveSecs=null, tokenAge=null, publicKeyLocation='null', publicKeyContent='-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo2OichzJ71KfAnSvJ0Buc+EdCp7ysE6j84qoIWviC8P0/hoi9rjd6vaNht3zuQpbdvxthtPPbPiXJwQrs08uSpFab0Kny1D/2wGW5vch/pvcrWmEUIXeiubUMJfgc42jNty7yhi9ZYBAsF8JH/XIV8xwWalh5T22zYv3ECNpyEC7XAjuU4WLi4Jr8YqTgQfUqAn1wUHnqaqLB5RsX9/K7kG5iqa8ctOal04HSlosA8OKvhkKVgkUhoRB9Y/jltDES5m1omvlIOUjQc5JQEvAzHr9slV0XUv6C/BNKPCOVhtD2CF+z5LJvfVTMgRoaoUGln1OkYtq6TgAWoQ2veCtNwIDAQAB-----END PUBLIC KEY-----', secretKeyContent='null', decryptionKeyLocation='null', decryptionKeyContent='null', jwksRefreshInterval=60, jwksRetainCacheOnErrorDuration=0, tokenHeader='Authorization', tokenCookie='null', alwaysCheckAuthorization=false, tokenKeyId='null', tokenDecryptionKeyId='null', tokenSchemes=[Bearer], requireNamedPrincipal=true, defaultSubClaim='null', subPath='null', defaultGroupsClaim='null', groupsPath='null', signatureAlgorithm=[RS256], keyEncryptionAlgorithm=[RSA_OAEP, RSA_OAEP_256], keyFormat=ANY, keyProvider=DEFAULT, keyCacheSize=100, keyCacheTimeToLive=10, expectedAudience=null, groupsSeparator=' ', relaxVerificationKeyValidation=true, verifyCertificateThumbprint=false, tlsCertificatePath=null, tlsTrustAll=false, tlsTrustedHosts=null, httpProxyHost=null, httpProxyPort=80}
+2026-03-13 09:12:03,615 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08035: Checking if the key content is a Base64 encoded PEM key
+2026-03-13 09:12:03,615 DEBUG [io.smallrye.jwt.auth.principal] (executor-thread-1) SRJWT08036: Key has been created from the encoded PEM key
+2026-03-13 09:12:03,618 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: alice
+2026-03-13 09:12:03,618 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: alice with role: STANDARD_USER and groups: [consumers]
+2026-03-13 09:12:03,619 INFO  [com.rhlowery.acs.infrastructure.ServiceLoaderProvider] (executor-thread-1) Loading AccessRequestService via ServiceLoader
+2026-03-13 09:12:03,619 INFO  [io.openlineage.client.OpenLineageClientUtils] (executor-thread-1) Disabled facets: []
+2026-03-13 09:12:03,647 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-1) {"eventTime":"2026-03-13T09:12:03.619804-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"START","run":{"runId":"d0bf5093-ea3e-4be2-9fc6-c15834e9f4f0","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.users","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"null:null","facets":{}}]}
+  When I submit a request for catalog "main", schema "default", table "users" with privileges "SELECT" # com.rhlowery.acs.StepDefinitions.i_submit_a_request_for_catalog_schema_table_with_privileges(java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: getRequests
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhbGljZSIsImdyb3VwcyI6WyJjb25zdW1lcnMiXSwidXNlcklkIjoiYWxpY2UiLCJ1c2VyTmFtZSI6ImFsaWNlIiwicm9sZSI6IlNUQU5EQVJEX1VTRVIiLCJpYXQiOjE3NzM0MDc1MjMsImV4cCI6MTc3MzQwNzgyMywianRpIjoiYTMzNzZlOTAtZDhlZi00Zjc4LWI4MjAtOThiNWI4ZTY1ZWQzIn0.SXtwMSiIFnliZISTGTAS_XuCJaPxaN-zqsJJHqaj68M9op1op18fTIbPAaxNjvTF6oemDl4ic0d9MbQMB1BaJ9HOJ_WLShM5UTztUD7OLHAKQ-sIPfiqb4zsHh_dGVHc9y5komkgVUx1vj0yPK-kwPuRJNzpCWRqS5Y0P-xJOqRhX_K8dURQv6ALjSO0j2v4EkmcQYH33EkU00WdM5F4P_AcgBvR5jxtSl2njXgfFQVUkTXrX01XhY0m8D5gYX5TU7VFyiH_tVHA3ouZM8vxtNk89RTfnHozlFkGjHlgL37CujZvSiNCJNW7uK4jZlSbtCzbRrPvJj-zAkz-XesuKQ]
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhbGljZSIsImdyb3VwcyI6WyJjb25zdW1lcnMiXSwidXNlcklkIjoiYWxpY2UiLCJ1c2VyTmFtZSI6ImFsaWNlIiwicm9sZSI6IlNUQU5EQVJEX1VTRVIiLCJpYXQiOjE3NzM0MDc1MjMsImV4cCI6MTc3MzQwNzgyMywianRpIjoiYTMzNzZlOTAtZDhlZi00Zjc4LWI4MjAtOThiNWI4ZTY1ZWQzIn0.SXtwMSiIFnliZISTGTAS_XuCJaPxaN-zqsJJHqaj68M9op1op18fTIbPAaxNjvTF6oemDl4ic0d9MbQMB1BaJ9HOJ_WLShM5UTztUD7OLHAKQ-sIPfiqb4zsHh_dGVHc9y5komkgVUx1vj0yPK-kwPuRJNzpCWRqS5Y0P-xJOqRhX_K8dURQv6ALjSO0j2v4EkmcQYH33EkU00WdM5F4P_AcgBvR5jxtSl2njXgfFQVUkTXrX01XhY0m8D5gYX5TU7VFyiH_tVHA3ouZM8vxtNk89RTfnHozlFkGjHlgL37CujZvSiNCJNW7uK4jZlSbtCzbRrPvJj-zAkz-XesuKQ]
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,788 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,789 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,789 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: alice
+2026-03-13 09:12:03,789 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: alice with role: STANDARD_USER and groups: [consumers]
+  Then the request should be saved with status "PENDING"                                               # com.rhlowery.acs.StepDefinitions.the_request_should_be_saved_with_status(java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: getRequests
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhbGljZSIsImdyb3VwcyI6WyJjb25zdW1lcnMiXSwidXNlcklkIjoiYWxpY2UiLCJ1c2VyTmFtZSI6ImFsaWNlIiwicm9sZSI6IlNUQU5EQVJEX1VTRVIiLCJpYXQiOjE3NzM0MDc1MjMsImV4cCI6MTc3MzQwNzgyMywianRpIjoiYTMzNzZlOTAtZDhlZi00Zjc4LWI4MjAtOThiNWI4ZTY1ZWQzIn0.SXtwMSiIFnliZISTGTAS_XuCJaPxaN-zqsJJHqaj68M9op1op18fTIbPAaxNjvTF6oemDl4ic0d9MbQMB1BaJ9HOJ_WLShM5UTztUD7OLHAKQ-sIPfiqb4zsHh_dGVHc9y5komkgVUx1vj0yPK-kwPuRJNzpCWRqS5Y0P-xJOqRhX_K8dURQv6ALjSO0j2v4EkmcQYH33EkU00WdM5F4P_AcgBvR5jxtSl2njXgfFQVUkTXrX01XhY0m8D5gYX5TU7VFyiH_tVHA3ouZM8vxtNk89RTfnHozlFkGjHlgL37CujZvSiNCJNW7uK4jZlSbtCzbRrPvJj-zAkz-XesuKQ]
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhbGljZSIsImdyb3VwcyI6WyJjb25zdW1lcnMiXSwidXNlcklkIjoiYWxpY2UiLCJ1c2VyTmFtZSI6ImFsaWNlIiwicm9sZSI6IlNUQU5EQVJEX1VTRVIiLCJpYXQiOjE3NzM0MDc1MjMsImV4cCI6MTc3MzQwNzgyMywianRpIjoiYTMzNzZlOTAtZDhlZi00Zjc4LWI4MjAtOThiNWI4ZTY1ZWQzIn0.SXtwMSiIFnliZISTGTAS_XuCJaPxaN-zqsJJHqaj68M9op1op18fTIbPAaxNjvTF6oemDl4ic0d9MbQMB1BaJ9HOJ_WLShM5UTztUD7OLHAKQ-sIPfiqb4zsHh_dGVHc9y5komkgVUx1vj0yPK-kwPuRJNzpCWRqS5Y0P-xJOqRhX_K8dURQv6ALjSO0j2v4EkmcQYH33EkU00WdM5F4P_AcgBvR5jxtSl2njXgfFQVUkTXrX01XhY0m8D5gYX5TU7VFyiH_tVHA3ouZM8vxtNk89RTfnHozlFkGjHlgL37CujZvSiNCJNW7uK4jZlSbtCzbRrPvJj-zAkz-XesuKQ]
+2026-03-13 09:12:03,821 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,822 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,822 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: alice
+2026-03-13 09:12:03,822 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: alice with role: STANDARD_USER and groups: [consumers]
+  And the response should contain HATEOAS links for approval and rejection                             # com.rhlowery.acs.StepDefinitions.the_response_should_contain_hateoas_links_for_approval_and_rejection()
+
+Scenario: Approvers can see pending requests               # features/access-request.feature:12
+2026-03-13 09:12:03,840 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login request for user: admin
+2026-03-13 09:12:03,840 DEBUG [io.smallrye.jwt.util] (executor-thread-1) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:03,846 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6ImM3ZDhlMjcxLTQ4NGQtNDFlNS1hODQ0LWJhYmZkNTRlZmRjZiJ9.nElT2ikiVVpqNMQ-HUinJaYli-4_koeGAmssCX3S5c16YThSfc0N4uFSfoHr_ZwmMS50X8cEyc9hpuiyhwBh1Au7UCvFLJCbf2t0clWL6DnqrD9uhAHlDJY0DWBdQXFhMDHk4OxgHpLPejLRPz1o9IGXZLmsSmGVVtUOIE-0Qnx3pQ0brT6wCg4RX2elE2Ex9A6C45HCtmYJzZ5fGo31M_4Ek4ciXX1zrRobjegG4Njvp-gveYKlQ4n3h5mHBReBCqKIn-_S-VuJRvBQkTrCoklZjSSmQbb4hyoEkahZNuyrXCqn6CJWeI1Ukm1ecovcuSYpfIx4zVQ5vBULcs-lgA
+  Given I am authenticated as "admin" with groups "admins" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: createRequests
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [164]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6ImM3ZDhlMjcxLTQ4NGQtNDFlNS1hODQ0LWJhYmZkNTRlZmRjZiJ9.nElT2ikiVVpqNMQ-HUinJaYli-4_koeGAmssCX3S5c16YThSfc0N4uFSfoHr_ZwmMS50X8cEyc9hpuiyhwBh1Au7UCvFLJCbf2t0clWL6DnqrD9uhAHlDJY0DWBdQXFhMDHk4OxgHpLPejLRPz1o9IGXZLmsSmGVVtUOIE-0Qnx3pQ0brT6wCg4RX2elE2Ex9A6C45HCtmYJzZ5fGo31M_4Ek4ciXX1zrRobjegG4Njvp-gveYKlQ4n3h5mHBReBCqKIn-_S-VuJRvBQkTrCoklZjSSmQbb4hyoEkahZNuyrXCqn6CJWeI1Ukm1ecovcuSYpfIx4zVQ5vBULcs-lgA]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/json]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6ImM3ZDhlMjcxLTQ4NGQtNDFlNS1hODQ0LWJhYmZkNTRlZmRjZiJ9.nElT2ikiVVpqNMQ-HUinJaYli-4_koeGAmssCX3S5c16YThSfc0N4uFSfoHr_ZwmMS50X8cEyc9hpuiyhwBh1Au7UCvFLJCbf2t0clWL6DnqrD9uhAHlDJY0DWBdQXFhMDHk4OxgHpLPejLRPz1o9IGXZLmsSmGVVtUOIE-0Qnx3pQ0brT6wCg4RX2elE2Ex9A6C45HCtmYJzZ5fGo31M_4Ek4ciXX1zrRobjegG4Njvp-gveYKlQ4n3h5mHBReBCqKIn-_S-VuJRvBQkTrCoklZjSSmQbb4hyoEkahZNuyrXCqn6CJWeI1Ukm1ecovcuSYpfIx4zVQ5vBULcs-lgA]
+2026-03-13 09:12:03,853 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,853 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,854 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,854 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+2026-03-13 09:12:03,854 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-1) {"eventTime":"2026-03-13T09:12:03.854374-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"START","run":{"runId":"ba453d72-1077-41c1-88ec-9eaddd996781","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.users","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"null:null","facets":{}}]}
+  And there is a pending request for table "users"         # com.rhlowery.acs.StepDefinitions.there_is_a_pending_request_for_table(java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: getRequests
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6ImM3ZDhlMjcxLTQ4NGQtNDFlNS1hODQ0LWJhYmZkNTRlZmRjZiJ9.nElT2ikiVVpqNMQ-HUinJaYli-4_koeGAmssCX3S5c16YThSfc0N4uFSfoHr_ZwmMS50X8cEyc9hpuiyhwBh1Au7UCvFLJCbf2t0clWL6DnqrD9uhAHlDJY0DWBdQXFhMDHk4OxgHpLPejLRPz1o9IGXZLmsSmGVVtUOIE-0Qnx3pQ0brT6wCg4RX2elE2Ex9A6C45HCtmYJzZ5fGo31M_4Ek4ciXX1zrRobjegG4Njvp-gveYKlQ4n3h5mHBReBCqKIn-_S-VuJRvBQkTrCoklZjSSmQbb4hyoEkahZNuyrXCqn6CJWeI1Ukm1ecovcuSYpfIx4zVQ5vBULcs-lgA]
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,858 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6ImM3ZDhlMjcxLTQ4NGQtNDFlNS1hODQ0LWJhYmZkNTRlZmRjZiJ9.nElT2ikiVVpqNMQ-HUinJaYli-4_koeGAmssCX3S5c16YThSfc0N4uFSfoHr_ZwmMS50X8cEyc9hpuiyhwBh1Au7UCvFLJCbf2t0clWL6DnqrD9uhAHlDJY0DWBdQXFhMDHk4OxgHpLPejLRPz1o9IGXZLmsSmGVVtUOIE-0Qnx3pQ0brT6wCg4RX2elE2Ex9A6C45HCtmYJzZ5fGo31M_4Ek4ciXX1zrRobjegG4Njvp-gveYKlQ4n3h5mHBReBCqKIn-_S-VuJRvBQkTrCoklZjSSmQbb4hyoEkahZNuyrXCqn6CJWeI1Ukm1ecovcuSYpfIx4zVQ5vBULcs-lgA]
+2026-03-13 09:12:03,858 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,859 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,859 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+  When I list all requests                                 # com.rhlowery.acs.StepDefinitions.i_list_all_requests()
+  Then I should see the request for table "users"          # com.rhlowery.acs.StepDefinitions.i_should_see_the_request_for_table(java.lang.String)
+  And I should see HATEOAS links to approve it             # com.rhlowery.acs.StepDefinitions.i_should_see_hateoas_links_to_approve_it()
+
+Scenario: Error handling for non-existent requests               # features/access-request.feature:19
+2026-03-13 09:12:03,877 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login request for user: admin
+2026-03-13 09:12:03,877 DEBUG [io.smallrye.jwt.util] (executor-thread-1) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:03,880 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6Ijc2MzA4M2EwLTEyYWItNDc5My1iZWFlLWY0NTk3ZDU0NTlmMSJ9.OsJ6YgZIVcDClmG_9156JWxqGZKMEP_VkJjutW2hq2zuyXh2KcZb2A8Zr9C8nQqbpHY-1Li6hG9VGhGenD_GdZvlCUJODtc2ZwqOCTOuqVKtlcetNYu5tXHrPTZpJgzZ7qEHfDGPTc_AV4CHSaohNC-RjqiFbeTo2Zelb7MB0_p3VE0r4vvaO3-uGAAc2l8ruPf4LMqCTBATEbd9fsYtGD6RdSa0dMRsSFLmN31_UTMF94ySttMpL0o8bqCxfbiSiGQGaJ9cbFeS34HW3IdGEqAHQgTlT_ZZSyeSeCFQglqSn69Dtma2aeq4asBRJ8cNmh4juWCJmHWEewr6B9bHIA
+  Given I am authenticated as "admin" with groups "admins"       # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: approveRequest
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [0]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6Ijc2MzA4M2EwLTEyYWItNDc5My1iZWFlLWY0NTk3ZDU0NTlmMSJ9.OsJ6YgZIVcDClmG_9156JWxqGZKMEP_VkJjutW2hq2zuyXh2KcZb2A8Zr9C8nQqbpHY-1Li6hG9VGhGenD_GdZvlCUJODtc2ZwqOCTOuqVKtlcetNYu5tXHrPTZpJgzZ7qEHfDGPTc_AV4CHSaohNC-RjqiFbeTo2Zelb7MB0_p3VE0r4vvaO3-uGAAc2l8ruPf4LMqCTBATEbd9fsYtGD6RdSa0dMRsSFLmN31_UTMF94ySttMpL0o8bqCxfbiSiGQGaJ9cbFeS34HW3IdGEqAHQgTlT_ZZSyeSeCFQglqSn69Dtma2aeq4asBRJ8cNmh4juWCJmHWEewr6B9bHIA]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/x-www-form-urlencoded; charset=ISO-8859-1]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6Ijc2MzA4M2EwLTEyYWItNDc5My1iZWFlLWY0NTk3ZDU0NTlmMSJ9.OsJ6YgZIVcDClmG_9156JWxqGZKMEP_VkJjutW2hq2zuyXh2KcZb2A8Zr9C8nQqbpHY-1Li6hG9VGhGenD_GdZvlCUJODtc2ZwqOCTOuqVKtlcetNYu5tXHrPTZpJgzZ7qEHfDGPTc_AV4CHSaohNC-RjqiFbeTo2Zelb7MB0_p3VE0r4vvaO3-uGAAc2l8ruPf4LMqCTBATEbd9fsYtGD6RdSa0dMRsSFLmN31_UTMF94ySttMpL0o8bqCxfbiSiGQGaJ9cbFeS34HW3IdGEqAHQgTlT_ZZSyeSeCFQglqSn69Dtma2aeq4asBRJ8cNmh4juWCJmHWEewr6B9bHIA]
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,886 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,886 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,887 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+2026-03-13 09:12:03,887 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Approving request: non-existent-id
+  When I try to approve a non-existent request "non-existent-id" # com.rhlowery.acs.StepDefinitions.i_try_to_approve_a_non_existent_request(java.lang.String)
+  Then the response status should be 404                         # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Scenario: Submit empty request list                       # features/access-request.feature:24
+2026-03-13 09:12:03,894 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login request for user: user1
+2026-03-13 09:12:03,895 DEBUG [io.smallrye.jwt.util] (executor-thread-1) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:03,896 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login successful for user1. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyMywiZXhwIjoxNzczNDA3ODIzLCJqdGkiOiIyNWViYzFlMC0wYTQ3LTQ3MWMtYTlkNi01YjFlNjA1MWNmMDcifQ.hmXMxlE_ggCteExaI4QsRcyiA6Ap_yxyrcfl05KWZFLwn3riv3vkkCkAJbg3WFz8QVABO4pnWPoP3d6QQkyWFdt6qSl_T0rz4bkykzZkn9ZhiuWM9PDrbVKGCCQmVQ-fWftEDk0XEKM-wwApx3nGaMXrOhlretZC8gXDF4IhWtgT3DYldzWoyJW-6RUDeoSBsPfwY4cCB-QPCwlr-fvym9JPPvPqOMa8Jjj7lHZZbLrI1nJPie0rikgxnaB1oMvWvoXtGHwWwqXMaa076ZWY1HdNP9CHK-AKDUPyj4Mm8OHJoxJbyF0h5SQ0EQi7zkW7W4t6AudR6yL5ReTGAtCOww
+  Given I am authenticated as "user1" with groups "users" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: createRequests
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyMywiZXhwIjoxNzczNDA3ODIzLCJqdGkiOiIyNWViYzFlMC0wYTQ3LTQ3MWMtYTlkNi01YjFlNjA1MWNmMDcifQ.hmXMxlE_ggCteExaI4QsRcyiA6Ap_yxyrcfl05KWZFLwn3riv3vkkCkAJbg3WFz8QVABO4pnWPoP3d6QQkyWFdt6qSl_T0rz4bkykzZkn9ZhiuWM9PDrbVKGCCQmVQ-fWftEDk0XEKM-wwApx3nGaMXrOhlretZC8gXDF4IhWtgT3DYldzWoyJW-6RUDeoSBsPfwY4cCB-QPCwlr-fvym9JPPvPqOMa8Jjj7lHZZbLrI1nJPie0rikgxnaB1oMvWvoXtGHwWwqXMaa076ZWY1HdNP9CHK-AKDUPyj4Mm8OHJoxJbyF0h5SQ0EQi7zkW7W4t6AudR6yL5ReTGAtCOww]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [2]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/json]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyMywiZXhwIjoxNzczNDA3ODIzLCJqdGkiOiIyNWViYzFlMC0wYTQ3LTQ3MWMtYTlkNi01YjFlNjA1MWNmMDcifQ.hmXMxlE_ggCteExaI4QsRcyiA6Ap_yxyrcfl05KWZFLwn3riv3vkkCkAJbg3WFz8QVABO4pnWPoP3d6QQkyWFdt6qSl_T0rz4bkykzZkn9ZhiuWM9PDrbVKGCCQmVQ-fWftEDk0XEKM-wwApx3nGaMXrOhlretZC8gXDF4IhWtgT3DYldzWoyJW-6RUDeoSBsPfwY4cCB-QPCwlr-fvym9JPPvPqOMa8Jjj7lHZZbLrI1nJPie0rikgxnaB1oMvWvoXtGHwWwqXMaa076ZWY1HdNP9CHK-AKDUPyj4Mm8OHJoxJbyF0h5SQ0EQi7zkW7W4t6AudR6yL5ReTGAtCOww]
+2026-03-13 09:12:03,902 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,902 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,903 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: user1
+2026-03-13 09:12:03,903 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: user1 with role: STANDARD_USER and groups: [users]
+  When I submit an empty request list                     # com.rhlowery.acs.StepDefinitions.i_submit_an_empty_request_list()
+  Then the response status should be 200                  # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Scenario: Log an audit entry                                     # features/audit-approvals.feature:8
+2026-03-13 09:12:03,910 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login request for user: admin
+2026-03-13 09:12:03,910 DEBUG [io.smallrye.jwt.util] (executor-thread-1) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:03,912 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6ImE1NTdhMmQ2LTQ1YTQtNGNiNi05YzA5LTZiMzZiZmYzZjk5NCJ9.b93B25JA21eHKeBsLizgnkpIRRm2epXLYoV7vPbrKnUewM1RbnOW9FshFvBIlZQBWGr72jYJx2kvI4K1w1qenvXyKF7WlpP-yuKWGFGzshlwgRxK_GfDBtYFrUmavNTABpo4WYFdWFrT8zPDmGckeWnifgGgOJ8QsdYPHctHEH-YpI4u1DzGpM20yOJJt1F--8uKUFYNqLnemv5bMX3wTjCNcP_k1NCdCcSQNfVYqNOXSMMU-6aAwK7UOK1gqGZqWGtqeIIYqSX9cS2n8diNMD_FevE2VRr34bMMh3Rr4ikMd_zmQDss2lGru_W-5iA7SqimPSsG9IhbxUAvYJ7q6g
+  Given I am authenticated as "admin" with groups "admins"       # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+2026-03-13 09:12:03,917 INFO  [com.rhlowery.acs.infrastructure.ServiceLoaderProvider] (executor-thread-1) Loading AuditService via ServiceLoader
+  When I post an audit entry for type "ACCESS_REQUEST_SUBMITTED" # com.rhlowery.acs.StepDefinitions.i_post_an_audit_entry_for_type(java.lang.String)
+  Then the audit log should contain the entry                    # com.rhlowery.acs.StepDefinitions.the_audit_log_should_contain_the_entry()
+
+Scenario: Approve an access request                                      # features/audit-approvals.feature:12
+2026-03-13 09:12:03,934 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login request for user: admin
+2026-03-13 09:12:03,935 DEBUG [io.smallrye.jwt.util] (executor-thread-1) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:03,936 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA
+  Given I am authenticated as "admin" with groups "admins"               # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,945 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: createRequests
+2026-03-13 09:12:03,945 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [170]
+2026-03-13 09:12:03,945 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,945 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/json]
+2026-03-13 09:12:03,945 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,945 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,945 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,946 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,946 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,946 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,946 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,946 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,946 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+2026-03-13 09:12:03,946 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-1) {"eventTime":"2026-03-13T09:12:03.946603-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"START","run":{"runId":"88850830-3da1-46db-bfca-bd0a32de3e47","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.secure_data","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"null:null","facets":{}}]}
+  Given there is a pending request for table "secure_data"               # com.rhlowery.acs.StepDefinitions.there_is_a_pending_request_for_table(java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: getRequests
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,950 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,950 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: approveRequest
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/x-www-form-urlencoded; charset=ISO-8859-1]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [0]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,972 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,972 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,973 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,973 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+2026-03-13 09:12:03,973 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Approving request: b2c455ba-f8b6-4132-9fe0-3511d7afe68f
+2026-03-13 09:12:03,973 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-1) {"eventTime":"2026-03-13T09:12:03.97323-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"COMPLETE","run":{"runId":"a8ed7c62-21e1-497b-88c7-b18fbf93d427","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.secure_data","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"admin:APPROVED","facets":{}}]}
+  When I approve the request for table "secure_data"                     # com.rhlowery.acs.StepDefinitions.i_approve_the_request_for_table(java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: getRequests
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjBjYTliZDQ3LThhODctNGRjMS1iMTY1LTJhY2JmNzRkYTZiZSJ9.dyOs6LqA0FxYYwr-K3LC7uci0O5IE3oPgaAD5ZQgdYmAKAWyIJtNPtgRMDvw_iVLCeJEYRMR9SSw7BnX8hOFASGiotZiJNWtI-KRYcqbOtTh5BzMNFBecHV5IZF56STU-f6wR83uKvLPqZKm68IOriXhjqY9y7GmGKDo-BtLgzWFueGo6BnzqrqRC4XCC2jixZ40MqKwqmzIat5gzRfYjqi3KUy0-7QqP7Ich-rlyxU5A92ZvCCjT6990fIYiPvLa3-Ug6HQ44am3IdyjRcd7ihIqjuMEw5vEOVz_r1tVuJajvZmPGqe3kNgVzYQxKnwKt3MUHMfSVzVE5DE0V6NZA]
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,977 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,977 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+  Then the request for table "secure_data" should have status "APPROVED" # com.rhlowery.acs.StepDefinitions.the_request_for_table_should_have_status(java.lang.String,java.lang.String)
+
+Scenario: Reject an access request                                          # features/audit-approvals.feature:17
+2026-03-13 09:12:03,992 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login request for user: admin
+2026-03-13 09:12:03,992 DEBUG [io.smallrye.jwt.util] (executor-thread-1) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:03,994 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-1) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw
+  Given I am authenticated as "admin" with groups "admins"                  # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:03,997 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: createRequests
+2026-03-13 09:12:03,997 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:03,997 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:03,997 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [173]
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/json]
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:03,998 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:03,998 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+2026-03-13 09:12:03,998 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-1) {"eventTime":"2026-03-13T09:12:03.998543-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"START","run":{"runId":"4e946d6c-edf9-4844-a5cc-6bf739d3618d","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.sensitive_data","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"null:null","facets":{}}]}
+  Given there is a pending request for table "sensitive_data"               # com.rhlowery.acs.StepDefinitions.there_is_a_pending_request_for_table(java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: getRequests
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,001 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:04,001 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,002 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:04,002 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: rejectRequest
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Length = [0]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Content-Type = [application/x-www-form-urlencoded; charset=ISO-8859-1]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,010 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,010 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,011 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:04,011 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+2026-03-13 09:12:04,011 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Rejecting request: 07c0d328-8cbf-4ba3-bbfc-ab0304935734
+2026-03-13 09:12:04,011 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-1) {"eventTime":"2026-03-13T09:12:04.011466-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"FAIL","run":{"runId":"6ed0e748-d568-43ce-8e92-6f4a56450619","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.sensitive_data","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"admin:REJECTED","facets":{}}]}
+  When I reject the request for table "sensitive_data"                      # com.rhlowery.acs.StepDefinitions.i_reject_the_request_for_table(java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Method: getRequests
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept = [*/*]
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,014 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw]
+2026-03-13 09:12:04,014 DEBUG [io.smallrye.jwt.auth] (executor-thread-1) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,015 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) JWT present: true, Name: admin
+2026-03-13 09:12:04,015 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-1) Checking admin for user: admin with role: ADMIN and groups: [admins]
+  Then the request for table "sensitive_data" should have status "REJECTED" # com.rhlowery.acs.StepDefinitions.the_request_for_table_should_have_status(java.lang.String,java.lang.String)
+Request method:	POST
+Request URI:	http://localhost:8081/api/storage/requests/07c0d328-8cbf-4ba3-bbfc-ab0304935734/reject
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		Authorization=Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw
+				Accept=*/*
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTIzLCJleHAiOjE3NzM0MDc4MjMsImp0aSI6IjFjNTZjMTQxLWJlMDMtNDM5OS04YjY1LWY0ODdjZGQxZDBkYSJ9.iyaKjL5llwSUneR6Ow-BEAYwCTAZMG-0cv7ZVHgpsz3h7pDWY8MNk8KYnXSqIB7_9fXUvCSZcdBC5DJsQlmgVDyKTT4ol6S-SuevKA4INjQhtu2aqpot1kFV8aGY_3R00xQ7V4G-kEqbyBJ1g0KRepnXwA8zrF6BpVITgH2ugiPjBWpYghXyj_SGfUOGflPX8R847Yg3Tyst05nvFWYuxPfSr4t5YN1lgD_R-EmlF9vB-OA_5MgQNhrtpOmsRLJ-PUymWiTxccTeHn-LPu79qE5EAU0kXolStqkbgRnWTEEISJY_NIJflore7K4o2-jc9H2kXvO73nUbA8W4a7yiBw
+Multiparts:		<none>
+Body:			<none>
+
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+content-length: 20
+
+{
+    "status": "success"
+}
+  And I should not see HATEOAS links to approve it                          # com.rhlowery.acs.StepDefinitions.i_should_not_see_hateoas_links_to_approve_it()
+      java.lang.AssertionError: 1 expectation failed.
+      JSON path any { it.tableName == 'sensitive_data' && it.links.any { it.rel == 'approve' } } doesn't match.
+      Expected: is <false>
+        Actual: null
+      
+      	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+      	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+      	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+      	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500)
+      	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:481)
+      	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:73)
+      	at org.codehaus.groovy.reflection.CachedConstructor.doConstructorInvoke(CachedConstructor.java:60)
+      	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrap.callConstructor(ConstructorSite.java:86)
+      	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:57)
+      	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)
+      	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:277)
+      	at io.restassured.internal.ResponseSpecificationImpl$HamcrestAssertionClosure.validate(ResponseSpecificationImpl.groovy:512)
+      	at io.restassured.internal.ResponseSpecificationImpl$HamcrestAssertionClosure$validate$1.call(Unknown Source)
+      	at io.restassured.internal.ResponseSpecificationImpl.validateResponseIfRequired(ResponseSpecificationImpl.groovy:696)
+      	at io.restassured.internal.ResponseSpecificationImpl.this$2$validateResponseIfRequired(ResponseSpecificationImpl.groovy)
+      	at jdk.internal.reflect.GeneratedMethodAccessor129.invoke(Unknown Source)
+      	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+      	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+      	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
+      	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:198)
+      	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:62)
+      	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:185)
+      	at io.restassured.internal.ResponseSpecificationImpl.body(ResponseSpecificationImpl.groovy:270)
+      	at io.restassured.specification.ResponseSpecification$body$2.callCurrent(Unknown Source)
+      	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:49)
+      	at io.restassured.specification.ResponseSpecification$body$2.callCurrent(Unknown Source)
+      	at io.restassured.internal.ResponseSpecificationImpl.body(ResponseSpecificationImpl.groovy:117)
+      	at io.restassured.internal.ValidatableResponseOptionsImpl.body(ValidatableResponseOptionsImpl.java:244)
+      	at com.rhlowery.acs.StepDefinitions.i_should_not_see_hateoas_links_to_approve_it(StepDefinitions.java:310)
+      	at ✽.I should not see HATEOAS links to approve it(classpath:features/audit-approvals.feature:21)
+
+Scenario: Health check endpoint returns UP            # features/observability.feature:6
+  When I call the health endpoint                     # com.rhlowery.acs.StepDefinitions.i_call_the_health_endpoint()
+  Then the status should be "UP"                      # com.rhlowery.acs.StepDefinitions.the_status_should_be(java.lang.String)
+  And it should contain liveness and readiness checks # com.rhlowery.acs.StepDefinitions.it_should_contain_liveness_and_readiness_checks()
+
+Scenario: Metrics endpoint returns Prometheus data         # features/observability.feature:11
+  When I call the metrics endpoint                         # com.rhlowery.acs.StepDefinitions.i_call_the_metrics_endpoint()
+  Then the response should contain "jvm_memory_used_bytes" # com.rhlowery.acs.StepDefinitions.the_response_should_contain(java.lang.String)
+
+Scenario: OpenAPI endpoint returns YAML or JSON     # features/observability.feature:15
+  When I call the openapi endpoint                  # com.rhlowery.acs.StepDefinitions.i_call_the_openapi_endpoint()
+  Then the response should contain "openapi"        # com.rhlowery.acs.StepDefinitions.the_response_should_contain(java.lang.String)
+  And the response should contain "ACS Backend API" # com.rhlowery.acs.StepDefinitions.the_response_should_contain(java.lang.String)
+
+Scenario: Search for tables                                # features/proxy.feature:8
+2026-03-13 09:12:04,086 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: admin
+2026-03-13 09:12:04,086 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,088 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTI0LCJleHAiOjE3NzM0MDc4MjQsImp0aSI6ImNjYWVhN2YzLTI1MDEtNDgwZC04MWU5LTJiOWNkMWNlZDJiYyJ9.NbD0_Ot1LAtzjxI_XkcwhNGkg06rQN1LOQ6YM8A6RKNESdhZfsmN5Cz67JgQUypEZUkzPidJMlbQsu_ZpemJNKdZ3uZ9jbfDvr1WbqlWcjYF-DKpvqLmnU0D2KT3Y_wEhHQLcbTrEv4RZ3YuVnwPRS8GH3wO-VjXkFmmHFt-CQoFbd7AjU7_KsC6XjbI5-6cP2ICj5uYQmPixLu0OcJE8BgR0ycfPlKxvn95E-f1qs5n5qXLyHEca4qaT9Xrf2zDia89Fc5FHmLXXFCr4DvVdVcSJwgWg8sY73FUQ74eO5D5hLExhsMWtI986BtcgjocD9igIcDhBUBsnRa89RgbMw
+  Given I am authenticated as "admin" with groups "admins" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I search the catalog for "sensitive"                # com.rhlowery.acs.StepDefinitions.i_search_the_catalog_for(java.lang.String)
+  Then the search results should contain "sensitive_table" # com.rhlowery.acs.StepDefinitions.the_search_results_should_contain(java.lang.String)
+
+Scenario: Execute SQL                                                     # features/proxy.feature:12
+2026-03-13 09:12:04,105 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: admin
+2026-03-13 09:12:04,105 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,107 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTI0LCJleHAiOjE3NzM0MDc4MjQsImp0aSI6ImM2YTAyYjU0LTkwMTYtNDAxZC04Yzk0LWFlM2ZhN2I2ZGM5YiJ9.iplCpbT9gBjGj6x2yeTtONdsUsDYyipVsIFTANreHBC_bGUDfOvbQvTD4JMf8vroVIjbtKIf0LkCJ32bbJeDJX14ENUveSMdUyvUZ4G_w162al3Tu_JtLtPaHw_Vu-WoB83ZLdcd-JXHP8pIMSsZpGZLT2vwOV8QDG699vjCGHX7uZ867wv_1LzTXS38arI9-3NBOKAmdzC9bY8mS9KdbhDg6ak-oVXrZZDquUubAOJA2-HojNSw1NX56llU37agWGmfFZtYyu4IOWr6UU_dLUQ-2zKP2EQLmjIvaf3JY7Sq4qfLfQTNks_Sv-voGXy9OpeeOY1BRlHBf_34G4i56Q
+  Given I am authenticated as "admin" with groups "admins"                # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I execute a SQL statement "SELECT * FROM main.default.secure_data" # com.rhlowery.acs.StepDefinitions.i_execute_a_sql_statement(java.lang.String)
+  Then the response should contain "success"                              # com.rhlowery.acs.StepDefinitions.the_response_should_contain(java.lang.String)
+
+Scenario: Fetch from SDK                                   # features/proxy.feature:16
+2026-03-13 09:12:04,118 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: admin
+2026-03-13 09:12:04,119 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,120 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTI0LCJleHAiOjE3NzM0MDc4MjQsImp0aSI6IjE4ZTFmZWMxLTQ2ZGEtNDUyNC04MThiLWIzNTljY2JmOTk2NCJ9.jLPd0MGbpMqOdjUNvdWEybQOq7j_sE9rk5ACs3yoHmCS0cU-z9mHdMWOZ0oee_vCYkxLNkhCvy8AoJHYy29RS7Ak58NqVEJeRkjRdunseEmI6MtLAUYhOQNN0Ke_oUb1sny9xzwS8yQiDMd2u0eAgJOajYK9Vrveo1EzYEoh0_FaVXUNzhQ0VL47NtKsNJRbo6fl9Z9yuRAo94kEJt1YqUKRt0Ol3s-LjTnCAONdWvVEUWRpBMHMHajwN_0IoLC5fxJeCSantwReRKF-cZLZfAyYCRemhGWR6jNRgMtKb3eSzQRBfp_ZWu4eIw6tBq2pnWUxveqNxbvPC_H4PZTLlA
+  Given I am authenticated as "admin" with groups "admins" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I fetch "catalogs" from the SDK                     # com.rhlowery.acs.StepDefinitions.i_fetch_from_the_sdk(java.lang.String)
+  Then the response should contain "sensitive_table"       # com.rhlowery.acs.StepDefinitions.the_response_should_contain(java.lang.String)
+
+Scenario: Call generic UC proxy                            # features/proxy.feature:20
+2026-03-13 09:12:04,128 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: admin
+2026-03-13 09:12:04,129 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,130 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTI0LCJleHAiOjE3NzM0MDc4MjQsImp0aSI6IjVhZmFjNmVlLWY4NWMtNGNlYS05Y2IzLTgzY2JjZTBmNDhiMSJ9.NAlexVHsHBrZ5iwc8SmLDYRFXY4PNQPAQEd19cmQ24p8bUF_tj7kB-AjBRtAuaKzvvmokuaEdboA51-sjG0NOpH2AI6BuuDQDOmMQTQU5ckvnEAhl5ZI_JLNfJ1iElq94FRYGXu6FgWpick9PhwgSGx5mJAK4MIWxYorz8A_01VSl4370A-MkxlNTcCT33ZVPOuvQD7GFbQKtlSDq2QpqHFA3uoRxnMysfn_S6LVS2wNYAAzwWlY7TuI9q3-5yMrYMHpYckTII9q1Kc1BeGo82TxIY362sREGjML4FNB93k1nOwI5SA90kS8uy8cRG2X0WlGhjueuM0rw9drdFshYQ
+  Given I am authenticated as "admin" with groups "admins" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+2026-03-13 09:12:04,134 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: user1
+2026-03-13 09:12:04,134 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,136 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for user1. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiJkNDhjNWQ1Mi04MTc4LTQ1NzctODBiMi1kNWNkNWFlYjA2ZDcifQ.C9FH-NtKU7sbkLVCRY0TSVL7T4e9N6VzylYZdfh3Pv8sKeKwZHZ5hwfTzRLfqgEw4eFLAroKGnphrrs11ZKZm9Rh5sNBn9wk2V_i5AHNRswWIdVTsTbyzZb4cTUJBapt3QeyBWOabfrTHPIyXyu0vzPUDzDj7GhiJbtso-fgkl3SOqUC9-7Xj56Nxg8cuc3N-h4nGDvYIGnaErdHPHtr4g2wFy6EaTULN-_I5mX5HaaG_nG7twnZt24HJo0uchi_phM8LemF33xoXZ4VkW5pq3xqozmsQa7XmnlM59nbYxW9rgU92KfxlIFbPlbs-gkZPdcGl3W0FiByiUzZlbpnvw
+  Given I am authenticated as "user1" with groups "users"  # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I call the generic UC proxy at "tables/mytable"     # com.rhlowery.acs.StepDefinitions.i_call_the_generic_uc_proxy_at(java.lang.String)
+  Then the response status should be 501                   # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Scenario: Proxy search with query                          # features/proxy.feature:25
+2026-03-13 09:12:04,143 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: admin
+2026-03-13 09:12:04,143 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,145 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTI0LCJleHAiOjE3NzM0MDc4MjQsImp0aSI6ImNjM2JiNTEzLWNmYTAtNGQxOC04ODM5LWQyZTY3ZDM3MDUzOCJ9.c1wmxog_jJTcGNa_AzMyhOv0ppM1ydqKXMTgr7pGS3_HEFwYdAbg8cLdTlUMOTvcUF9m4tg4rtOK0y9qPY9G-pUOPaF_q4m6szZ_MlDeA9CI_Ov42GcVzV0Ysdh5mjpfUKEGpi3h2EP4VKb655hrz-HFEip_EqRi3XfwRngzXU9f2BDM38-UrgLSi3rcB06e66P64XjnjtPskeP0L4XEVxdZMOtXsrKYnXWxusvrLDP_3NIHs2cYLoOKKveWUYUOxJ8IhZSTpVgaZuNQDo4uaP1-k146iWZzfLb22iPgixkfHdgdWbTHQC5NsoFpC7gaJqWgG3MsWbzGwnrkeEgHFQ
+  Given I am authenticated as "admin" with groups "admins" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+2026-03-13 09:12:04,149 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: user1
+2026-03-13 09:12:04,149 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,151 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for user1. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiJlOWUzYjU0Ni1hODA1LTRlOWYtODU1ZC0zM2Y5ZDE2NGZhZDMifQ.fHtbGkN1PlZ9x3HNXsc087Lb9Ymtu-jrslmLaGNijRgxMoqcvN9iqAx_y1tYeZBEZTFxBaO6BnkPW43-nhlC3seNUVTF-KDb70rI5q24nE9fSo1bLeoypCIAddbBEOtLF4j_FUfEBXju31lEVQOlKZqKUjnFFbKk_Jn4W3CnvcuUz0j2HtEsq8u_O3kScbl0CqbogDtuBUpv4ZEJHFxdwlvJmS6GfQfNJy5syNhBMSN3czJsni12pyHEZSPv5H-5yUZKOgUKqVLLY86TcxrfH6k236PayWTzDMo0l8ZSAtrdMUYggWaizmecpww3ej5EM6zYe1QoFDt5XWCWXraNYA
+  Given I am authenticated as "user1" with groups "users"  # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I call the search api with query "test"             # com.rhlowery.acs.StepDefinitions.i_call_the_search_api_with_query(java.lang.String)
+  Then the response status should be 200                   # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Scenario: Proxy SQL execution                              # features/proxy.feature:30
+2026-03-13 09:12:04,158 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: admin
+2026-03-13 09:12:04,158 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,159 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTI0LCJleHAiOjE3NzM0MDc4MjQsImp0aSI6IjYzZjAyMTEyLTMwNGMtNGRhZi04Mjc0LTE0ZjEzMTk1NjgxZCJ9.TLTB7Po3Na40Gz9OjAufJFwn7g6wTXS-b7HkI0Huc7mT942668mOzoSKl62c0o2AKx9ALw2dlS-WJXKXHV-ZTr6EJ30QtBvSY3lL9dHvbJwjAA5fkWN3c8_y9P1XMcomKDubDeSjdONK_yxr1_DVmjRwueSychBCMPhu5VQD4fJNnkRXKBHfqExMg7s_b_BW9c_-G3f4Pz4mkZu9RZKMMWWW9DXwjIo8Qw09mUEuLffEYDxo6eptAD4rqb_Y70j-a_z9v1AtVF2mPP-AR5u-hP_5HQgjZBb3_vQEZypx1N1JBxhl8M8mf6ScnBDle2qZUz8xHppRtr_nY-Kc6BHVKA
+  Given I am authenticated as "admin" with groups "admins" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+2026-03-13 09:12:04,163 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: user1
+2026-03-13 09:12:04,164 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,165 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for user1. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI1NDhiZTFkNS00NWM5LTRjNzAtOTEwMi0xMjhjYmZmZDQ4ZmYifQ.eLQ0pWRedGs5q7tpjTJPL7ayNq7gcdwMAHe5_Jj5AkAZDbzmvauDaL1QR2KHixoEC7xoYs1mekx0bjznHEvPOrv9ZhaDtx1Wa4efZ91NnL58uUACFqzMLSYsBkeSVLaPWE0ALEuHKbbr24YS-aaklzCGZzv2DW0LNlXPhVHdaqNn8m8Z3r9HCSCoKCLx13Q65VsBY4I-J0so8kyoV_UwPXWvw0GnrPrui2JitpwelRrYK0Z3X_IcT31nxrViHh5eBX6c9qCgwbZD00EqKrUKxGc-1wGebrz4rrDBvdpZOZAO9iMJgYebIydVBW3-K3jmqyQhN2ehoPebSrsiBolVhw
+  Given I am authenticated as "user1" with groups "users"  # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I execute SQL "SELECT 1"                            # com.rhlowery.acs.StepDefinitions.i_execute_sql(java.lang.String)
+  Then the response status should be 200                   # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Scenario: Generic UC proxy                                 # features/proxy.feature:35
+2026-03-13 09:12:04,174 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: admin
+2026-03-13 09:12:04,174 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,175 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for admin. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJhZG1pbiIsImdyb3VwcyI6WyJhZG1pbnMiXSwidXNlcklkIjoiYWRtaW4iLCJ1c2VyTmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzczNDA3NTI0LCJleHAiOjE3NzM0MDc4MjQsImp0aSI6ImIyNjg0YWQ1LTdkM2QtNGVmOS1iZDA4LTU1YjI4MTA5YTdiZiJ9.gHLdRWYm8dbGr2MlXWgA8BFnT3q7ydkCksyXk9wG_OEqxaI_70TjF0LU5Z3SfjFFhw9yVlIR-TWAgJ_7bIMsy-ZxZDzigrZJp7jzXWdJXaSGdsYdBd0yBeDJ8-h5itg2bKJ7lvwDfsyJt1SLu5eZh8yK2JrivwRplFHOp4vvSumSPVeEnxNcPQoFLD25O3ISV5JFRz6UX_56RzcuOWp0j6NfcHpWAADjFYhNN3yzh-IxosVpx6rsmw001kqSVCCOsxwC2cz1qAVqgmI7MujSGDAXWomfeZyOwGon8Kmud0sdl2oP07VnXFCEervGRYYRfgkY9qkiMlebg0hVPtdbLg
+  Given I am authenticated as "admin" with groups "admins" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I call the generic UC proxy at "some/path"          # com.rhlowery.acs.StepDefinitions.i_call_the_generic_uc_proxy_at(java.lang.String)
+  Then the response status should be 501                   # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Scenario: Unauthorized access to approvals                    # features/security.feature:5
+2026-03-13 09:12:04,183 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: user1
+2026-03-13 09:12:04,183 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,184 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for user1. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI4NTQ1NWVmMy1jNjNlLTQ2YTYtYWE4Ni0yOWEzZDM0ZmRiYjcifQ.Bv5jvFtSap--hlRavF8E7ADHrC7Z0IOsMtoPQgI6NIiTUZBPUaH-mBYtOoQCOPMtcalmATgynWDR4V_baLsokp--jwiEX27AAnqYm01bAx0Ka_S9oDeYeW59G6inqoUEqcONkJLZeds5teXQOazwX2F6tiH13orZ8YmULeQJg_dbfnzejmOzhQia6iHuRAeECpeFMlxAwHdF8k7QIcQTv7irSkooD7TeHUNvbs5qk9J92BzKWh0ZGjXDi0zvmMikxID6W8RyutQzaJOSQyH1jZV-7WD4v120U7Bwol7arvtvHldENA4W1sD_e3JMS1Dhx1lxYS-o4ftqFoaSV2CHaA
+  Given I am authenticated as "user1" with groups "users"     # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,187 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Method: createRequests
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Content-Type = [application/json]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Content-Length = [172]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept = [*/*]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI4NTQ1NWVmMy1jNjNlLTQ2YTYtYWE4Ni0yOWEzZDM0ZmRiYjcifQ.Bv5jvFtSap--hlRavF8E7ADHrC7Z0IOsMtoPQgI6NIiTUZBPUaH-mBYtOoQCOPMtcalmATgynWDR4V_baLsokp--jwiEX27AAnqYm01bAx0Ka_S9oDeYeW59G6inqoUEqcONkJLZeds5teXQOazwX2F6tiH13orZ8YmULeQJg_dbfnzejmOzhQia6iHuRAeECpeFMlxAwHdF8k7QIcQTv7irSkooD7TeHUNvbs5qk9J92BzKWh0ZGjXDi0zvmMikxID6W8RyutQzaJOSQyH1jZV-7WD4v120U7Bwol7arvtvHldENA4W1sD_e3JMS1Dhx1lxYS-o4ftqFoaSV2CHaA]
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI4NTQ1NWVmMy1jNjNlLTQ2YTYtYWE4Ni0yOWEzZDM0ZmRiYjcifQ.Bv5jvFtSap--hlRavF8E7ADHrC7Z0IOsMtoPQgI6NIiTUZBPUaH-mBYtOoQCOPMtcalmATgynWDR4V_baLsokp--jwiEX27AAnqYm01bAx0Ka_S9oDeYeW59G6inqoUEqcONkJLZeds5teXQOazwX2F6tiH13orZ8YmULeQJg_dbfnzejmOzhQia6iHuRAeECpeFMlxAwHdF8k7QIcQTv7irSkooD7TeHUNvbs5qk9J92BzKWh0ZGjXDi0zvmMikxID6W8RyutQzaJOSQyH1jZV-7WD4v120U7Bwol7arvtvHldENA4W1sD_e3JMS1Dhx1lxYS-o4ftqFoaSV2CHaA]
+2026-03-13 09:12:04,188 DEBUG [io.smallrye.jwt.auth] (executor-thread-2) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) JWT present: true, Name: user1
+2026-03-13 09:12:04,188 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Checking admin for user: user1 with role: STANDARD_USER and groups: [users]
+2026-03-13 09:12:04,188 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-2) {"eventTime":"2026-03-13T09:12:04.188621-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"START","run":{"runId":"0ec57968-f1d9-4392-b6f7-cde9c1a1f97a","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.private_table","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"null:null","facets":{}}]}
+  And there is a pending request for table "private_table"    # com.rhlowery.acs.StepDefinitions.there_is_a_pending_request_for_table(java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Method: getRequests
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI4NTQ1NWVmMy1jNjNlLTQ2YTYtYWE4Ni0yOWEzZDM0ZmRiYjcifQ.Bv5jvFtSap--hlRavF8E7ADHrC7Z0IOsMtoPQgI6NIiTUZBPUaH-mBYtOoQCOPMtcalmATgynWDR4V_baLsokp--jwiEX27AAnqYm01bAx0Ka_S9oDeYeW59G6inqoUEqcONkJLZeds5teXQOazwX2F6tiH13orZ8YmULeQJg_dbfnzejmOzhQia6iHuRAeECpeFMlxAwHdF8k7QIcQTv7irSkooD7TeHUNvbs5qk9J92BzKWh0ZGjXDi0zvmMikxID6W8RyutQzaJOSQyH1jZV-7WD4v120U7Bwol7arvtvHldENA4W1sD_e3JMS1Dhx1lxYS-o4ftqFoaSV2CHaA]
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept = [*/*]
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI4NTQ1NWVmMy1jNjNlLTQ2YTYtYWE4Ni0yOWEzZDM0ZmRiYjcifQ.Bv5jvFtSap--hlRavF8E7ADHrC7Z0IOsMtoPQgI6NIiTUZBPUaH-mBYtOoQCOPMtcalmATgynWDR4V_baLsokp--jwiEX27AAnqYm01bAx0Ka_S9oDeYeW59G6inqoUEqcONkJLZeds5teXQOazwX2F6tiH13orZ8YmULeQJg_dbfnzejmOzhQia6iHuRAeECpeFMlxAwHdF8k7QIcQTv7irSkooD7TeHUNvbs5qk9J92BzKWh0ZGjXDi0zvmMikxID6W8RyutQzaJOSQyH1jZV-7WD4v120U7Bwol7arvtvHldENA4W1sD_e3JMS1Dhx1lxYS-o4ftqFoaSV2CHaA]
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,191 DEBUG [io.smallrye.jwt.auth] (executor-thread-2) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) JWT present: true, Name: user1
+2026-03-13 09:12:04,191 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Checking admin for user: user1 with role: STANDARD_USER and groups: [users]
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Method: approveRequest
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI4NTQ1NWVmMy1jNjNlLTQ2YTYtYWE4Ni0yOWEzZDM0ZmRiYjcifQ.Bv5jvFtSap--hlRavF8E7ADHrC7Z0IOsMtoPQgI6NIiTUZBPUaH-mBYtOoQCOPMtcalmATgynWDR4V_baLsokp--jwiEX27AAnqYm01bAx0Ka_S9oDeYeW59G6inqoUEqcONkJLZeds5teXQOazwX2F6tiH13orZ8YmULeQJg_dbfnzejmOzhQia6iHuRAeECpeFMlxAwHdF8k7QIcQTv7irSkooD7TeHUNvbs5qk9J92BzKWh0ZGjXDi0zvmMikxID6W8RyutQzaJOSQyH1jZV-7WD4v120U7Bwol7arvtvHldENA4W1sD_e3JMS1Dhx1lxYS-o4ftqFoaSV2CHaA]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Content-Length = [0]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept = [*/*]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Content-Type = [application/x-www-form-urlencoded; charset=ISO-8859-1]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMSIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMSIsInVzZXJOYW1lIjoidXNlcjEiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI4NTQ1NWVmMy1jNjNlLTQ2YTYtYWE4Ni0yOWEzZDM0ZmRiYjcifQ.Bv5jvFtSap--hlRavF8E7ADHrC7Z0IOsMtoPQgI6NIiTUZBPUaH-mBYtOoQCOPMtcalmATgynWDR4V_baLsokp--jwiEX27AAnqYm01bAx0Ka_S9oDeYeW59G6inqoUEqcONkJLZeds5teXQOazwX2F6tiH13orZ8YmULeQJg_dbfnzejmOzhQia6iHuRAeECpeFMlxAwHdF8k7QIcQTv7irSkooD7TeHUNvbs5qk9J92BzKWh0ZGjXDi0zvmMikxID6W8RyutQzaJOSQyH1jZV-7WD4v120U7Bwol7arvtvHldENA4W1sD_e3JMS1Dhx1lxYS-o4ftqFoaSV2CHaA]
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,199 DEBUG [io.smallrye.jwt.auth] (executor-thread-2) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,199 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) JWT present: true, Name: user1
+2026-03-13 09:12:04,200 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Checking admin for user: user1 with role: STANDARD_USER and groups: [users]
+  When I try to approve the request for table "private_table" # com.rhlowery.acs.StepDefinitions.i_try_to_approve_the_request_for_table(java.lang.String)
+  Then the response status should be 403                      # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Scenario: User can see their own requests                                                                 # features/security.feature:11
+2026-03-13 09:12:04,205 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: user2
+2026-03-13 09:12:04,205 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,206 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for user2. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMiIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMiIsInVzZXJOYW1lIjoidXNlcjIiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiJlMDA3NWYwMC03ZWRiLTQ2MTktODQ1Mi1mODAwZTRiNDNmYTIifQ.JMJmS6UXVk9mgXIMDgjzVUUW92a4jsFGSdOZt1BGaMgFLY6HvKUEdmbMAaJ8ZDEId4JbRUNqDqsztRvSWxrYRsVODdpzPuS18sjeRuukzilpoqYdAjdqaOIUBLNTF6yRuoKJy-AbMQdTNz1h6NC7ANDzFIXbqqwl3RhP3W-qvZFtq5NyZqmlgFg8Dl0HKTVN8uFWxap7jO9WVfpPwFrROO0-fwxN975kExgPQn_L3a7utvIVgy7mhDspRwsw0diVwmlX5fkljtvWylowe12Nqpkww3v24cFz-gZ9T9_uNyOe-6D9VO-siKsVmSfuw-2OfwzuuwRKQcRyuGcw8ydZYw
+  Given I am authenticated as "user2" with groups "users"                                                 # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Method: createRequests
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept = [*/*]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMiIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMiIsInVzZXJOYW1lIjoidXNlcjIiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiJlMDA3NWYwMC03ZWRiLTQ2MTktODQ1Mi1mODAwZTRiNDNmYTIifQ.JMJmS6UXVk9mgXIMDgjzVUUW92a4jsFGSdOZt1BGaMgFLY6HvKUEdmbMAaJ8ZDEId4JbRUNqDqsztRvSWxrYRsVODdpzPuS18sjeRuukzilpoqYdAjdqaOIUBLNTF6yRuoKJy-AbMQdTNz1h6NC7ANDzFIXbqqwl3RhP3W-qvZFtq5NyZqmlgFg8Dl0HKTVN8uFWxap7jO9WVfpPwFrROO0-fwxN975kExgPQn_L3a7utvIVgy7mhDspRwsw0diVwmlX5fkljtvWylowe12Nqpkww3v24cFz-gZ9T9_uNyOe-6D9VO-siKsVmSfuw-2OfwzuuwRKQcRyuGcw8ydZYw]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Content-Length = [164]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMiIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMiIsInVzZXJOYW1lIjoidXNlcjIiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiJlMDA3NWYwMC03ZWRiLTQ2MTktODQ1Mi1mODAwZTRiNDNmYTIifQ.JMJmS6UXVk9mgXIMDgjzVUUW92a4jsFGSdOZt1BGaMgFLY6HvKUEdmbMAaJ8ZDEId4JbRUNqDqsztRvSWxrYRsVODdpzPuS18sjeRuukzilpoqYdAjdqaOIUBLNTF6yRuoKJy-AbMQdTNz1h6NC7ANDzFIXbqqwl3RhP3W-qvZFtq5NyZqmlgFg8Dl0HKTVN8uFWxap7jO9WVfpPwFrROO0-fwxN975kExgPQn_L3a7utvIVgy7mhDspRwsw0diVwmlX5fkljtvWylowe12Nqpkww3v24cFz-gZ9T9_uNyOe-6D9VO-siKsVmSfuw-2OfwzuuwRKQcRyuGcw8ydZYw]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Content-Type = [application/json]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,210 DEBUG [io.smallrye.jwt.auth] (executor-thread-2) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,210 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) JWT present: true, Name: user2
+2026-03-13 09:12:04,211 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Checking admin for user: user2 with role: STANDARD_USER and groups: [users]
+2026-03-13 09:12:04,211 INFO  [io.openlineage.client.transports.ConsoleTransport] (executor-thread-2) {"eventTime":"2026-03-13T09:12:04.211021-04:00","producer":"https://github.com/rhlowery/acs-backend/tag/1.0.0","schemaURL":"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent","eventType":"START","run":{"runId":"9d4e3d56-cf16-444c-a59b-54ede8b95451","facets":{}},"job":{"namespace":"acs-backend","name":"process-access-request","facets":{}},"inputs":[{"namespace":"unity-catalog","name":"main.default.my_table","facets":{}}],"outputs":[{"namespace":"acs-permissions","name":"null:null","facets":{}}]}
+  When I submit a request for catalog "main", schema "default", table "my_table" with privileges "SELECT" # com.rhlowery.acs.StepDefinitions.i_submit_a_request_for_catalog_schema_table_with_privileges(java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Method: getRequests
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: User-Agent = [Apache-HttpClient/4.5.14 (Java/17.0.18)]
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept-Encoding = [gzip,deflate]
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Connection = [Keep-Alive]
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Cookie = [bff_jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMiIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMiIsInVzZXJOYW1lIjoidXNlcjIiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiJlMDA3NWYwMC03ZWRiLTQ2MTktODQ1Mi1mODAwZTRiNDNmYTIifQ.JMJmS6UXVk9mgXIMDgjzVUUW92a4jsFGSdOZt1BGaMgFLY6HvKUEdmbMAaJ8ZDEId4JbRUNqDqsztRvSWxrYRsVODdpzPuS18sjeRuukzilpoqYdAjdqaOIUBLNTF6yRuoKJy-AbMQdTNz1h6NC7ANDzFIXbqqwl3RhP3W-qvZFtq5NyZqmlgFg8Dl0HKTVN8uFWxap7jO9WVfpPwFrROO0-fwxN975kExgPQn_L3a7utvIVgy7mhDspRwsw0diVwmlX5fkljtvWylowe12Nqpkww3v24cFz-gZ9T9_uNyOe-6D9VO-siKsVmSfuw-2OfwzuuwRKQcRyuGcw8ydZYw]
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Accept = [*/*]
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Host = [localhost:8081]
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Header: Authorization = [Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMiIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMiIsInVzZXJOYW1lIjoidXNlcjIiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiJlMDA3NWYwMC03ZWRiLTQ2MTktODQ1Mi1mODAwZTRiNDNmYTIifQ.JMJmS6UXVk9mgXIMDgjzVUUW92a4jsFGSdOZt1BGaMgFLY6HvKUEdmbMAaJ8ZDEId4JbRUNqDqsztRvSWxrYRsVODdpzPuS18sjeRuukzilpoqYdAjdqaOIUBLNTF6yRuoKJy-AbMQdTNz1h6NC7ANDzFIXbqqwl3RhP3W-qvZFtq5NyZqmlgFg8Dl0HKTVN8uFWxap7jO9WVfpPwFrROO0-fwxN975kExgPQn_L3a7utvIVgy7mhDspRwsw0diVwmlX5fkljtvWylowe12Nqpkww3v24cFz-gZ9T9_uNyOe-6D9VO-siKsVmSfuw-2OfwzuuwRKQcRyuGcw8ydZYw]
+2026-03-13 09:12:04,213 DEBUG [io.smallrye.jwt.auth] (executor-thread-2) SRJWT06000: tokenHeaderName = Authorization
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) JWT present: true, Name: user2
+2026-03-13 09:12:04,213 INFO  [com.rhlowery.acs.resource.AccessRequestResource] (executor-thread-2) Checking admin for user: user2 with role: STANDARD_USER and groups: [users]
+  And I list all requests                                                                                 # com.rhlowery.acs.StepDefinitions.i_list_all_requests()
+  Then I should see the request for table "my_table"                                                      # com.rhlowery.acs.StepDefinitions.i_should_see_the_request_for_table(java.lang.String)
+
+Scenario: Logout                                          # features/security.feature:17
+2026-03-13 09:12:04,221 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login request for user: user2
+2026-03-13 09:12:04,222 DEBUG [io.smallrye.jwt.util] (executor-thread-2) SRJWT01003: Trying to create a key from the encoded PEM key...
+2026-03-13 09:12:04,222 INFO  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) Login successful for user2. Token first chars: eyJ0eXAiOi
+DEBUG: Generated token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1bml0eS1jYXRhbG9nLWFjcy1iZmYiLCJ1cG4iOiJ1c2VyMiIsImdyb3VwcyI6WyJ1c2VycyJdLCJ1c2VySWQiOiJ1c2VyMiIsInVzZXJOYW1lIjoidXNlcjIiLCJyb2xlIjoiU1RBTkRBUkRfVVNFUiIsImlhdCI6MTc3MzQwNzUyNCwiZXhwIjoxNzczNDA3ODI0LCJqdGkiOiI3N2FlMWU4Ny03YjBmLTRmMWItYmFlNS1lMTlhNTFmZThmZDIifQ.XWvo-dE95R5kweUkFANgCe4RryXhOrNgZebRDmC-PvoMQvRdhQzgD8_cGZpwWezrwfu9-uHGOTgC71dPATeR9l-X2v8XUwok15dweyxchrmb-Aj7MH1lMFOXmJ8dBnrYr0B1dHe-axRKbW8ogUJUUEVuaeOJWU61XysfnBOGltMg3ejoiqfQMg75XEdUyRD1fIKI4HPpnx2f3SH6oLAOJPY14xD6MjSYSRgDOfjrMcmwJ7t-EGuWzCfjYmM3nSjFR7Ujn7t8GnFKVAWyFIRmZygzwax9LrtPRPQ7L6uZKxHfK73NwgzR-aDswi28aZMbVTxK9-jb3sEzFrUUMnUFPg
+  Given I am authenticated as "user2" with groups "users" # com.rhlowery.acs.StepDefinitions.i_am_authenticated_as_with_groups(java.lang.String,java.lang.String)
+DEBUG: givenAuth() currentToken: present
+  When I logout                                           # com.rhlowery.acs.StepDefinitions.i_logout()
+DEBUG: givenAuth() currentToken: NULL
+2026-03-13 09:12:04,227 WARN  [com.rhlowery.acs.resource.AuthResource] (executor-thread-2) No principal found in /me
+  And I call the me endpoint                              # com.rhlowery.acs.StepDefinitions.i_call_the_me_endpoint()
+  Then the response status should be 401                  # com.rhlowery.acs.StepDefinitions.the_response_status_should_be(int)
+
+Failed scenarios:
+classpath:features/audit-approvals.feature:17 # Reject an access request
+
+20 Scenarios (1 failed, 19 passed)
+71 Steps (1 failed, 70 passed)
+0m1.063s
+
+
+java.lang.AssertionError: 1 expectation failed.
+JSON path any { it.tableName == 'sensitive_data' && it.links.any { it.rel == 'approve' } } doesn't match.
+Expected: is <false>
+  Actual: null
+
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:481)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:73)
+	at org.codehaus.groovy.reflection.CachedConstructor.doConstructorInvoke(CachedConstructor.java:60)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrap.callConstructor(ConstructorSite.java:86)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:57)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:277)
+	at io.restassured.internal.ResponseSpecificationImpl$HamcrestAssertionClosure.validate(ResponseSpecificationImpl.groovy:512)
+	at io.restassured.internal.ResponseSpecificationImpl$HamcrestAssertionClosure$validate$1.call(Unknown Source)
+	at io.restassured.internal.ResponseSpecificationImpl.validateResponseIfRequired(ResponseSpecificationImpl.groovy:696)
+	at io.restassured.internal.ResponseSpecificationImpl.this$2$validateResponseIfRequired(ResponseSpecificationImpl.groovy)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:198)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:62)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:185)
+	at io.restassured.internal.ResponseSpecificationImpl.body(ResponseSpecificationImpl.groovy:270)
+	at io.restassured.specification.ResponseSpecification$body$2.callCurrent(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:49)
+	at io.restassured.specification.ResponseSpecification$body$2.callCurrent(Unknown Source)
+	at io.restassured.internal.ResponseSpecificationImpl.body(ResponseSpecificationImpl.groovy:117)
+	at io.restassured.internal.ValidatableResponseOptionsImpl.body(ValidatableResponseOptionsImpl.java:244)
+	at com.rhlowery.acs.StepDefinitions.i_should_not_see_hateoas_links_to_approve_it(StepDefinitions.java:310)
+	at ✽.I should not see HATEOAS links to approve it(classpath:features/audit-approvals.feature:21)
+
+
+[ERROR] Tests run: 29, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.890 s <<< FAILURE! -- in com.rhlowery.acs.CucumberTest
+[ERROR] com.rhlowery.acs.CucumberTest.getTests()[4][4] -- Time elapsed: 0.054 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: failed in classpath:features/audit-approvals.feature at line 21
+	at io.quarkiverse.cucumber.CucumberQuarkusTest.lambda$getTests$5(CucumberQuarkusTest.java:151)
+	at io.quarkus.test.junit.QuarkusTestExtension.interceptDynamicTest(QuarkusTestExtension.java:880)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.Streams$StreamBuilderImpl.forEachRemaining(Streams.java:411)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.LinkedList$LLSpliterator.forEachRemaining(LinkedList.java:1242)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEachOrdered(ReferencePipeline.java:601)
+	at java.base/java.util.Optional.ifPresent(Optional.java:178)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: java.lang.AssertionError: 1 expectation failed.
+JSON path any { it.tableName == 'sensitive_data' && it.links.any { it.rel == 'approve' } } doesn't match.
+Expected: is <false>
+  Actual: null
+
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:481)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:73)
+	at org.codehaus.groovy.reflection.CachedConstructor.doConstructorInvoke(CachedConstructor.java:60)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrap.callConstructor(ConstructorSite.java:86)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:57)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:277)
+	at io.restassured.internal.ResponseSpecificationImpl$HamcrestAssertionClosure.validate(ResponseSpecificationImpl.groovy:512)
+	at io.restassured.internal.ResponseSpecificationImpl$HamcrestAssertionClosure$validate$1.call(Unknown Source)
+	at io.restassured.internal.ResponseSpecificationImpl.validateResponseIfRequired(ResponseSpecificationImpl.groovy:696)
+	at io.restassured.internal.ResponseSpecificationImpl.this$2$validateResponseIfRequired(ResponseSpecificationImpl.groovy)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.codehaus.groovy.runtime.callsite.PlainObjectMetaMethodSite.doInvoke(PlainObjectMetaMethodSite.java:43)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite$PogoCachedMethodSiteNoUnwrapNoCoerce.invoke(PogoMetaMethodSite.java:198)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaMethodSite.callCurrent(PogoMetaMethodSite.java:62)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:185)
+	at io.restassured.internal.ResponseSpecificationImpl.body(ResponseSpecificationImpl.groovy:270)
+	at io.restassured.specification.ResponseSpecification$body$2.callCurrent(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:49)
+	at io.restassured.specification.ResponseSpecification$body$2.callCurrent(Unknown Source)
+	at io.restassured.internal.ResponseSpecificationImpl.body(ResponseSpecificationImpl.groovy:117)
+	at io.restassured.internal.ValidatableResponseOptionsImpl.body(ValidatableResponseOptionsImpl.java:244)
+	at com.rhlowery.acs.StepDefinitions.i_should_not_see_hateoas_links_to_approve_it(StepDefinitions.java:310)
+	at ✽.I should not see HATEOAS links to approve it(classpath:features/audit-approvals.feature:21)
+
+[INFO] Running com.rhlowery.acs.GreetingResourceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.rhlowery.acs.GreetingResourceTest
+[INFO] Running com.rhlowery.acs.infrastructure.ServiceLoaderProviderTest
+2026-03-13 09:12:04,238 INFO  [com.rhlowery.acs.infrastructure.ServiceLoaderProvider] (main) Loading AccessRequestService via ServiceLoader
+2026-03-13 09:12:04,239 INFO  [com.rhlowery.acs.infrastructure.ServiceLoaderProvider] (main) Loading AuditService via ServiceLoader
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.rhlowery.acs.infrastructure.ServiceLoaderProviderTest
+[INFO] Running com.rhlowery.acs.service.impl.DefaultAccessRequestServiceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in com.rhlowery.acs.service.impl.DefaultAccessRequestServiceTest
+2026-03-13 09:12:04,252 INFO  [io.quarkus] (main) acs-backend stopped in 0.011s
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   CucumberTest>CucumberQuarkusTest.lambda$getTests$5:151 failed in classpath:features/audit-approvals.feature at line 21
+[INFO] 
+[ERROR] Tests run: 33, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.251 s
+[INFO] Finished at: 2026-03-13T09:12:04-04:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.4:test (default-test) on project acs-backend: There are test failures.
+[ERROR] 
+[ERROR] See /Users/loweryr/git/github/rhlowery/acs-backend/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
