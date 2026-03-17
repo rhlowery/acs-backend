@@ -509,5 +509,176 @@ public class StepDefinitions {
         lastResponse.then()
             .statusCode(200)
             .body("groups", hasItems(groups.toArray()));
-}
+    }
+
+    @Given("{string} is logged in")
+    public void user_is_logged_in(String user) {
+        String groups = "users";
+        if ("alice".equals(user)) groups = "data-users";
+        if ("bob".equals(user)) groups = "finance-approvers";
+        if ("charlie".equals(user)) groups = "sensitive-approvers";
+        if ("admin".equals(user)) groups = "admins";
+        
+        i_am_authenticated_as_with_groups(user, groups);
+    }
+
+    @Given("{string} is logged in with groups {string}")
+    public void user_is_logged_in_with_groups(String user, String groups) {
+        i_am_authenticated_as_with_groups(user, groups);
+    }
+
+    @When("she requests {string} on {string} with justification {string} and expiration in {string} hours")
+    public void she_requests_with_expiration(String privilege, String fullPath, String justification, String hours) {
+        String[] parts = fullPath.substring(1).split("/");
+        String catalog = parts[0];
+        String schema = parts[1];
+        String table = parts[2];
+        this.lastCheckedTable = table;
+        
+        long exp = System.currentTimeMillis() + (Long.parseLong(hours) * 3600000L);
+        
+        String requestId = UUID.randomUUID().toString();
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .body(List.of(Map.of(
+                "id", requestId,
+                "catalogName", catalog,
+                "schemaName", schema,
+                "tableName", table,
+                "privileges", List.of(privilege),
+                "justification", justification,
+                "expirationTime", exp
+            )))
+            .post("/api/storage/requests");
+        lastResponse.then().statusCode(200);
+    }
+
+    @Then("it should have an expiration time set")
+    public void it_should_have_expiration_set() {
+        givenAuth()
+            .get("/api/storage/requests")
+            .then()
+            .statusCode(200)
+            .body("[0].expirationTime", notNullValue());
+    }
+
+    @Then("it should require approval from {string}")
+    public void it_should_require_approval_from(String group) {
+        givenAuth()
+            .get("/api/storage/requests")
+            .then()
+            .statusCode(200)
+            .body("[0].approverGroups", hasItem(group));
+    }
+
+    @Given("{string} has a pending request for {string}")
+    public void user_has_pending_request(String user, String fullPath) {
+        user_is_logged_in(user);
+        she_requests_with_expiration("SELECT", fullPath, "Initial", "24");
+    }
+
+    @Given("the request requires approval from {string}")
+    public void request_requires_approval_from(String group) {
+        it_should_require_approval_from(group);
+    }
+
+    @When("{string} who is in {string} approves the request")
+    public void approver_approves(String user, String group) {
+        String originalToken = currentToken;
+        user_is_logged_in_with_groups(user, group);
+        
+        Response response = givenAuth().get("/api/storage/requests");
+        String findPath = "find { it.tableName == '" + lastCheckedTable + "' }";
+        if (lastCheckedTable == null) findPath = "[0]";
+        Object reqObj = response.then().extract().path(findPath);
+        assertNotNull(reqObj, "Request for table " + lastCheckedTable + " not found");
+        String id = response.then().extract().path(findPath + ".id");
+        
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .post("/api/storage/requests/" + id + "/approve");
+        lastResponse.then().statusCode(200);
+        
+        currentToken = originalToken;
+    }
+
+    @When("{string} who is in {string} denies the request")
+    public void approver_denies(String user, String group) {
+        String originalToken = currentToken;
+        user_is_logged_in_with_groups(user, group);
+        
+        Response response = givenAuth().get("/api/storage/requests");
+        String findPath = "find { it.tableName == '" + lastCheckedTable + "' }";
+        if (lastCheckedTable == null) findPath = "[0]";
+        Object reqObj = response.then().extract().path(findPath);
+        assertNotNull(reqObj, "Request for table " + lastCheckedTable + " not found");
+        String id = response.then().extract().path(findPath + ".id");
+        
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .post("/api/storage/requests/" + id + "/reject");
+        lastResponse.then().statusCode(200);
+        
+        currentToken = originalToken;
+    }
+
+    @Then("the request status should be {string}")
+    public void request_status_should_be(String status) {
+        String findPath = "find { it.tableName == '" + lastCheckedTable + "' }.status";
+        if (lastCheckedTable == null) findPath = "[0].status";
+        
+        givenAuth()
+            .get("/api/storage/requests")
+            .then()
+            .statusCode(200)
+            .body(findPath, equalTo(status));
+    }
+
+    @Then("the policy should be applied in the catalog")
+    public void policy_applied() {
+        // Here we'd normally check the mock provider state
+        // For simplicity, we check if effective permissions reflect it
+        Response response = givenAuth().get("/api/storage/requests");
+        String idPath = "find { it.tableName == '" + lastCheckedTable + "' }";
+        if (lastCheckedTable == null) idPath = "[0]";
+        
+        String catalog = response.then().extract().path(idPath + ".catalogName");
+        String schema = response.then().extract().path(idPath + ".schemaName");
+        String table = response.then().extract().path(idPath + ".tableName");
+        String user = response.then().extract().path(idPath + ".userId");
+        String path = "/" + catalog + "/" + schema + "/" + table;
+        
+        String perms = catalogService.getEffectivePermissions(catalog, path, user);
+        assertTrue(perms != null && !perms.equals("NONE"), "Permissions should be applied");
+    }
+
+    @Then("no policy should be applied")
+    public void no_policy_applied() {
+        Response response = givenAuth().get("/api/storage/requests");
+        Integer size = response.then().extract().path("size()");
+        if (size == null || size == 0) return;
+        
+        String idPath = "find { it.tableName == '" + lastCheckedTable + "' }";
+        if (lastCheckedTable == null) idPath = "[0]";
+        
+        String catalog = response.then().extract().path(idPath + ".catalogName");
+        String schema = response.then().extract().path(idPath + ".schemaName");
+        String table = response.then().extract().path(idPath + ".tableName");
+        String user = response.then().extract().path(idPath + ".userId");
+        String path = "/" + catalog + "/" + schema + "/" + table;
+
+        String perms = catalogService.getEffectivePermissions(catalog, path, user);
+        assertTrue(perms == null || perms.equals("NONE") || perms.equals("READ"), "No additional privileges should be applied");
+    }
+
+    @When("he approves the pending request from {string} for {string}")
+    public void admin_approves(String requester, String fullPath) {
+        Response response = givenAuth().get("/api/storage/requests");
+        String id = response.then().extract().path("find { it.tableName == '" + fullPath.substring(fullPath.lastIndexOf('/')+1) + "' }.id");
+        
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .post("/api/storage/requests/" + id + "/approve");
+        lastResponse.then().statusCode(200);
+    }
 }

@@ -12,7 +12,7 @@ public class MockAccessRequestServiceTest {
     @Test
     public void testMockServiceSymmetry() {
         MockAccessRequestService service = new MockAccessRequestService();
-        AccessRequest req = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "PENDING", 0L, null, "j", List.of("data-owners"), null);
+        AccessRequest req = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "PENDING", 0L, null, "j", List.of("data-owners"), null, null);
         
         // 1. Save new
         service.saveRequests(List.of(req), "u1", List.of("users"), false);
@@ -26,7 +26,7 @@ public class MockAccessRequestServiceTest {
         assertEquals(1, all.size(), "Admin should see everything");
         
         // 4. Update partial as owner
-        AccessRequest partial = new AccessRequest("id1", null, null, null, null, "new_table", null, null, null, null, "new_just", null, null);
+        AccessRequest partial = new AccessRequest("id1", null, null, null, null, "new_table", null, null, null, null, "new_just", null, null, null);
         service.saveRequests(List.of(partial), "u1", List.of("users"), false);
         
         AccessRequest updated = service.getRequestById("id1").get();
@@ -38,21 +38,21 @@ public class MockAccessRequestServiceTest {
     @Test
     public void testForbiddenUpdate() {
         MockAccessRequestService service = new MockAccessRequestService();
-        AccessRequest req = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "PENDING", 0L, null, "j", null, null);
+        AccessRequest req = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "PENDING", 0L, null, "j", null, null, null);
         service.saveRequests(List.of(req), "u1", List.of("users"), false);
         
         // Try update as another non-admin user
-        AccessRequest update = new AccessRequest("id1", "u2", "u2", "c", "s", "t", List.of("SELECT"), "APPROVED", 0L, 0L, "j", null, null);
+        AccessRequest update = new AccessRequest("id1", "u2", "u2", "c", "s", "t", List.of("SELECT"), "APPROVED", 0L, 0L, "j", null, null, null);
         assertThrows(RuntimeException.class, () -> service.saveRequests(List.of(update), "u2", List.of("users"), false));
     }
     
     @Test
     public void testAdminUpdateStatus() {
         MockAccessRequestService service = new MockAccessRequestService();
-        AccessRequest req = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "PENDING", 0L, null, "j", null, null);
+        AccessRequest req = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "PENDING", 0L, null, "j", null, null, null);
         service.saveRequests(List.of(req), "u1", List.of("users"), false);
         
-        AccessRequest update = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "REJECTED", 0L, 0L, "j", null, null);
+        AccessRequest update = new AccessRequest("id1", "u1", "u1", "c", "s", "t", List.of("SELECT"), "REJECTED", 0L, 0L, "j", null, null, null);
         service.saveRequests(List.of(update), "admin", List.of("admins"), true);
         
         assertEquals("REJECTED", service.getRequestById("id1").get().status());

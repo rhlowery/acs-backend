@@ -7,5 +7,7 @@ public record CatalogNode(
     String name,
     NodeType type,
     String path,
-    String implementation
+    String implementation,
+    java.util.List<String> approvers,
+    String owner
 ) {}

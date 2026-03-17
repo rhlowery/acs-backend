@@ -108,7 +108,7 @@ public class AccessRequestResourceTest {
             .contentType(ContentType.JSON)
             .post("/api/storage/requests/some-id/approve")
             .then()
-            .statusCode(403);
+            .statusCode(404);
     }
 
     @Test

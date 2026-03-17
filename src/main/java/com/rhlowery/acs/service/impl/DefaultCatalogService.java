@@ -77,6 +77,29 @@ public class DefaultCatalogService implements CatalogService {
     }
 
     @Override
+    public List<String> getRequiredApprovers(String catalogId, String path) {
+        CatalogProvider provider = findProvider(catalogId);
+        if (provider == null) return java.util.Collections.emptyList();
+
+        String currentPath = path;
+        while (currentPath != null && !currentPath.isEmpty()) {
+            com.rhlowery.acs.domain.CatalogNode node = provider.getNode(currentPath);
+            if (node != null && node.approvers() != null && !node.approvers().isEmpty()) {
+                return node.approvers();
+            }
+            currentPath = getParentPath(currentPath);
+        }
+        return java.util.Collections.emptyList();
+    }
+
+    private String getParentPath(String path) {
+        if (path == null || path.equals("/") || !path.contains("/")) return null;
+        int lastSlash = path.lastIndexOf('/');
+        if (lastSlash == 0) return "/";
+        return path.substring(0, lastSlash);
+    }
+
+    @Override
     public void clear() {
         for (CatalogProvider provider : providers) {
             if (provider instanceof com.rhlowery.acs.service.impl.AbstractMockProvider) {

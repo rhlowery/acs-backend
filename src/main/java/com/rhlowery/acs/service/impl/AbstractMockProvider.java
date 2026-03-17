@@ -27,25 +27,33 @@ public abstract class AbstractMockProvider implements CatalogProvider {
         List<CatalogNode> nodes = new ArrayList<>();
         if (path == null || "/".equals(path)) {
             if ("polaris".equals(catalogId)) {
-                nodes.add(new CatalogNode("polaris_cat", NodeType.CATALOG, "/polaris_cat", implClass));
+                nodes.add(new CatalogNode("polaris_cat", NodeType.CATALOG, "/polaris_cat", implClass, List.of("polaris-admins"), "admin"));
             } else if ("datahub".equals(catalogId)) {
-                nodes.add(new CatalogNode("default", NodeType.DATABASE, "/default", implClass));
+                nodes.add(new CatalogNode("default", NodeType.DATABASE, "/default", implClass, List.of("datahub-admins"), "admin"));
             } else if ("gravitino".equals(catalogId)) {
-                nodes.add(new CatalogNode("metalake", NodeType.NAMESPACE, "/metalake", implClass));
+                nodes.add(new CatalogNode("metalake", NodeType.NAMESPACE, "/metalake", implClass, List.of("gravitino-admins"), "admin"));
             } else if ("atlan".equals(catalogId)) {
-                nodes.add(new CatalogNode("asset", NodeType.TABLE, "/asset", implClass));
+                nodes.add(new CatalogNode("asset", NodeType.TABLE, "/asset", implClass, List.of("atlan-admins"), "admin"));
             } else if ("hive".equals(catalogId)) {
-                nodes.add(new CatalogNode("hms_cat", NodeType.CATALOG, "/hms_cat", implClass));
+                nodes.add(new CatalogNode("hms_cat", NodeType.CATALOG, "/hms_cat", implClass, List.of("hms-admins"), "admin"));
             } else {
-                nodes.add(new CatalogNode("main", NodeType.CATALOG, "/main", implClass));
-                nodes.add(new CatalogNode("default", NodeType.DATABASE, "/default", implClass));
+                nodes.add(new CatalogNode("main", NodeType.CATALOG, "/main", implClass, List.of("admins"), "admin"));
+                nodes.add(new CatalogNode("default", NodeType.DATABASE, "/default", implClass, List.of("admins"), "admin"));
             }
         } else if (path.contains("default")) {
-            nodes.add(new CatalogNode("sensitive_tbl", NodeType.TABLE, path + "/sensitive_tbl", implClass));
+            nodes.add(new CatalogNode("sensitive_tbl", NodeType.TABLE, path + "/sensitive_tbl", implClass, List.of("sensitive-approvers"), "data-governor"));
         } else if (path.contains("finance")) {
-            nodes.add(new CatalogNode("quarters", NodeType.NAMESPACE, path + "/quarters", implClass));
+            nodes.add(new CatalogNode("quarters", NodeType.NAMESPACE, path + "/quarters", implClass, List.of("finance-approvers"), "finance-lead"));
         }
         return nodes;
+    }
+    @Override
+    public CatalogNode getNode(String path) {
+        if (path == null || "/".equals(path)) return new CatalogNode("root", NodeType.NAMESPACE, "/", implClass, List.of("admins"), "admin");
+        if (path.contains("sensitive")) return new CatalogNode("sensitive_tbl", NodeType.TABLE, path, implClass, List.of("sensitive-approvers"), "data-governor");
+        if (path.contains("finance")) return new CatalogNode("finance", NodeType.NAMESPACE, path, implClass, List.of("finance-approvers"), "finance_lead");
+        if (path.contains("default")) return new CatalogNode("default", NodeType.DATABASE, path, implClass, List.of("default-admins"), "admin");
+        return new CatalogNode("node", NodeType.TABLE, path, implClass, List.of("admins"), "admin");
     }
 
     @Override
@@ -61,9 +69,14 @@ public abstract class AbstractMockProvider implements CatalogProvider {
         String action = policies.get(principal + ":" + path);
         if (action != null) return action;
 
-        if (path != null && (path.contains("sensitive") || path.contains("salaries") || path.contains("users") || path.contains("polaris"))) {
+        if (path != null && (path.contains("salaries") || path.contains("users") || path.contains("polaris"))) {
             if ("alice".equals(principal)) return "SELECT";
             if ("polaris".equals(principal)) return "READ";
+            if ("bob".equals(principal)) return "NONE";
+            if ("charlie".equals(principal)) return "READ";
+        }
+        if (path != null && path.contains("sensitive")) {
+            if ("alice".equals(principal)) return "READ";
             if ("bob".equals(principal)) return "NONE";
             if ("charlie".equals(principal)) return "READ";
         }

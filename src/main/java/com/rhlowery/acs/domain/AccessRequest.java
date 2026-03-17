@@ -16,5 +16,6 @@ public record AccessRequest(
     Long updatedAt,
     String justification,
     List<String> approverGroups,
-    Map<String, Object> metadata
+    Map<String, Object> metadata,
+    Long expirationTime
 ) {}

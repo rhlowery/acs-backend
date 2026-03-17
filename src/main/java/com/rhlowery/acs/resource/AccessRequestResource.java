@@ -57,6 +57,10 @@ public class AccessRequestResource {
         public List<String> privileges;
         public String status;
         public String justification;
+        public String requesterId;
+        public String userId;
+        public List<String> approverGroups;
+        public Long expirationTime;
         public Map<String, Object> _links;
         
         public HalAccessRequest(AccessRequest r) {
@@ -67,9 +71,13 @@ public class AccessRequestResource {
             this.privileges = r.privileges();
             this.status = r.status();
             this.justification = r.justification();
+            this.requesterId = r.requesterId();
+            this.userId = r.userId();
+            this.approverGroups = r.approverGroups();
+            this.expirationTime = r.expirationTime();
             Map<String, Object> links = new java.util.HashMap<>();
             links.put("self", Map.of("href", "/api/storage/requests/" + r.id()));
-            if ("PENDING".equals(r.status())) {
+            if ("PENDING".equals(r.status()) || "PARTIALLY_APPROVED".equals(r.status())) {
                 links.put("approve", Map.of("href", "/api/storage/requests/" + r.id() + "/approve"));
                 links.put("reject", Map.of("href", "/api/storage/requests/" + r.id() + "/reject"));
             } else if ("APPROVED".equals(r.status())) {
@@ -148,8 +156,19 @@ public class AccessRequestResource {
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
         boolean isAdmin = groups.contains("admins");
 
-        accessRequestService.saveRequests(requests, userId, groups, isAdmin);
-        requests.forEach(r -> lineageService.emitAccessRequestEvent(r, userId));
+        for (AccessRequest r : requests) {
+            String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
+            List<String> required = catalogService.getRequiredApprovers(r.catalogName(), path);
+            
+            AccessRequest enriched = new AccessRequest(
+                r.id(), userId, r.userId() != null ? r.userId() : userId,
+                r.catalogName(), r.schemaName(), r.tableName(),
+                r.privileges(), (isAdmin && r.status() != null) ? r.status() : "PENDING", System.currentTimeMillis(), null,
+                r.justification(), required, new java.util.HashMap<>(), r.expirationTime()
+            );
+            accessRequestService.saveRequests(List.of(enriched), userId, groups, isAdmin);
+            lineageService.emitAccessRequestEvent(enriched, userId);
+        }
         
         broadcast("request-created", requests);
         return Response.ok(Map.of("status", "success", "count", requests.size())).build();
@@ -163,30 +182,57 @@ public class AccessRequestResource {
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
         boolean isAdmin = groups.contains("admins");
 
-        if (!isAdmin) {
-            return Response.status(403).entity(Map.of("error", "Only admins can approve requests")).build();
-        }
+        // Remove admin-only check to allow designated approvers to approve
 
         return accessRequestService.getRequestById(id)
             .map(r -> {
-                AccessRequest approved = new AccessRequest(
-                    r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
-                    r.privileges(), "APPROVED", r.createdAt(), System.currentTimeMillis(), 
-                    r.justification(), r.approverGroups(), r.metadata()
-                );
-                // Orchestrate policy application synchronously
-                try {
-                    String principal = r.userId() != null ? r.userId() : r.requesterId();
-                    String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
-                    catalogService.applyPolicy(r.catalogName(), path, r.privileges().get(0), principal);
-                } catch (Exception e) {
-                    LOG.error("Failed to orchestrate policy", e);
+                if (!"PENDING".equals(r.status()) && !"PARTIALLY_APPROVED".equals(r.status())) {
+                    return Response.status(400).entity(Map.of("error", "Request is not in a state that can be approved")).build();
                 }
 
-                accessRequestService.saveRequests(List.of(approved), userId, groups, isAdmin);
-                lineageService.emitAccessRequestEvent(approved, userId);
-                broadcast("request-approved", approved);
-                return Response.ok(new HalAccessRequest(approved)).build();
+                List<String> userGroups = jwt.getGroups() != null ? new ArrayList<>(jwt.getGroups()) : Collections.emptyList();
+                boolean isDesignatedApprover = r.approverGroups() != null && r.approverGroups().stream().anyMatch(userGroups::contains);
+                
+                if (!isAdmin && !isDesignatedApprover) {
+                    return Response.status(403).entity(Map.of("error", "You are not an authorized approver for this request")).build();
+                }
+
+                Map<String, Object> meta = r.metadata() != null ? new java.util.HashMap<>(r.metadata()) : new java.util.HashMap<>();
+                @SuppressWarnings("unchecked")
+                List<String> signs = (List<String>) meta.getOrDefault("approvals", new ArrayList<String>());
+                
+                // Track which group this user is approving for
+                if (isDesignatedApprover && !isAdmin) {
+                    String approvingGroup = r.approverGroups().stream().filter(userGroups::contains).findFirst().get();
+                    if (!signs.contains(approvingGroup)) {
+                        signs.add(approvingGroup);
+                    }
+                }
+                meta.put("approvals", signs);
+
+                boolean fullyApproved = isAdmin || (r.approverGroups() == null || r.approverGroups().isEmpty() || signs.size() >= r.approverGroups().size());
+                String newStatus = fullyApproved ? "APPROVED" : "PARTIALLY_APPROVED";
+
+                AccessRequest updated = new AccessRequest(
+                    r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
+                    r.privileges(), newStatus, r.createdAt(), System.currentTimeMillis(), 
+                    r.justification(), r.approverGroups(), meta, r.expirationTime()
+                );
+
+                if (fullyApproved) {
+                    try {
+                        String principal = r.userId() != null ? r.userId() : r.requesterId();
+                        String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
+                        catalogService.applyPolicy(r.catalogName(), path, r.privileges().get(0), principal);
+                    } catch (Exception e) {
+                        LOG.error("Failed to orchestrate policy", e);
+                    }
+                }
+
+                accessRequestService.saveRequests(List.of(updated), userId, groups, isAdmin);
+                lineageService.emitAccessRequestEvent(updated, userId);
+                broadcast("request-approved", updated);
+                return Response.ok(new HalAccessRequest(updated)).build();
             })
             .orElse(Response.status(404).build());
     }
@@ -199,16 +245,19 @@ public class AccessRequestResource {
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
         boolean isAdmin = groups.contains("admins");
 
-        if (!isAdmin) {
-            return Response.status(403).entity(Map.of("error", "Only admins can reject requests")).build();
-        }
-
+        List<String> userGroups = jwt.getGroups() != null ? new ArrayList<>(jwt.getGroups()) : Collections.emptyList();
+        
         return accessRequestService.getRequestById(id)
             .map(r -> {
+                boolean isDesignatedApprover = r.approverGroups() != null && r.approverGroups().stream().anyMatch(userGroups::contains);
+                if (!isAdmin && !isDesignatedApprover) {
+                    return Response.status(403).entity(Map.of("error", "You are not an authorized approver for this request")).build();
+                }
+
                 AccessRequest rejected = new AccessRequest(
                     r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
                     r.privileges(), "REJECTED", r.createdAt(), System.currentTimeMillis(), 
-                    r.justification(), r.approverGroups(), r.metadata()
+                    r.justification(), r.approverGroups(), r.metadata(), r.expirationTime()
                 );
                 accessRequestService.saveRequests(List.of(rejected), userId, groups, isAdmin);
                 lineageService.emitAccessRequestEvent(rejected, userId);
@@ -240,7 +289,7 @@ public class AccessRequestResource {
                     AccessRequest verifiedReq = new AccessRequest(
                         r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
                         r.privileges(), "VERIFIED", r.createdAt(), System.currentTimeMillis(), 
-                        r.justification(), r.approverGroups(), r.metadata()
+                        r.justification(), r.approverGroups(), r.metadata(), r.expirationTime()
                     );
                     accessRequestService.saveRequests(List.of(verifiedReq), userId, groups, isAdmin);
                     broadcast("request-verified", verifiedReq);

@@ -46,16 +46,18 @@ public class MockAccessRequestService implements AccessRequestService {
                     null,
                     req.justification(),
                     req.approverGroups(),
-                    req.metadata()
+                    req.metadata(),
+                    req.expirationTime()
                 );
                 storage.put(req.id(), newReq);
             } else {
                 boolean isOwner = Objects.equals(existing.requesterId(), userId) || Objects.equals(existing.userId(), userId);
-                if (!isOwner && !isAdmin) {
+                boolean isDesignatedApprover = existing.approverGroups() != null && groups != null && existing.approverGroups().stream().anyMatch(groups::contains);
+                if (!isOwner && !isAdmin && !isDesignatedApprover) {
                     throw new RuntimeException("Forbidden: You do not have permission to update request " + req.id());
                 }
                 
-                String status = isAdmin ? req.status() : existing.status();
+                String status = (isAdmin || isDesignatedApprover) ? req.status() : existing.status();
                 String requesterId = existing.requesterId();
                 
                 AccessRequest updated = new AccessRequest(
@@ -71,7 +73,8 @@ public class MockAccessRequestService implements AccessRequestService {
                     req.updatedAt() != null ? req.updatedAt() : System.currentTimeMillis(),
                     req.justification() != null ? req.justification() : existing.justification(),
                     req.approverGroups() != null ? req.approverGroups() : existing.approverGroups(),
-                    req.metadata() != null ? req.metadata() : existing.metadata()
+                    req.metadata() != null ? req.metadata() : existing.metadata(),
+                    req.expirationTime() != null ? req.expirationTime() : existing.expirationTime()
                 );
                 storage.put(req.id(), updated);
             }

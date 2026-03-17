@@ -15,10 +15,10 @@ public class MockServiceDeepTest {
         List<String> adminGroups = List.of("admins");
         
         // 1. Partial update with nulls
-        AccessRequest req = new AccessRequest("p", "u", "u", "c", "s", "t", List.of("S"), "PENDING", 0L, null, "j", null, null);
+        AccessRequest req = new AccessRequest("p", "u", "u", "c", "s", "t", List.of("S"), "PENDING", 0L, null, "j", null, null, null);
         service.saveRequests(List.of(req), "u", emptyGroups, false);
         
-        AccessRequest update = new AccessRequest("p", null, null, null, null, null, null, "APPROVED", null, null, null, null, null);
+        AccessRequest update = new AccessRequest("p", null, null, null, null, null, null, "APPROVED", null, null, null, null, null, null);
         service.saveRequests(List.of(update), "admin", adminGroups, true);
         
         AccessRequest retrieved = service.getRequestById("p").orElseThrow();

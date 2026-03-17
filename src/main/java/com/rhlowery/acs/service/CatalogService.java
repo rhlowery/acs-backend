@@ -9,5 +9,6 @@ public interface CatalogService {
     boolean verifyPolicy(String catalogId, String path, String expectedAction, String principal);
     List<com.rhlowery.acs.domain.CatalogNode> getNodes(String catalogId, String path);
     List<String> getProviders();
+    List<String> getRequiredApprovers(String catalogId, String path);
     void clear();
 }
