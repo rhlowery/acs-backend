@@ -209,6 +209,11 @@ public class StepDefinitions {
 
     @When("I reject the request for table {string}")
     public void i_reject_the_request_for_table(String table) {
+        i_reject_the_request_for_table_with_reason(table, "Standard rejection");
+    }
+
+    @When("I reject the request for table {string} with reason {string}")
+    public void i_reject_the_request_for_table_with_reason(String table, String reason) {
         Response response = givenAuth()
             .get("/api/storage/requests");
         
@@ -219,6 +224,7 @@ public class StepDefinitions {
         String url = "/api/storage/requests/" + id + "/reject";
         lastResponse = givenAuth()
             .contentType(ContentType.JSON)
+            .body(Map.of("reason", reason))
             .post(url);
         lastResponse.then().statusCode(200);
     }
@@ -522,6 +528,66 @@ public class StepDefinitions {
         i_am_authenticated_as_with_groups(user, groups);
     }
 
+    @When("she requests {string} on {string} for Service Principal {string}")
+    public void she_requests_for_service_principal(String privilege, String fullPath, String sp) {
+        String[] parts = fullPath.substring(1).split("/");
+        String catalog = parts[0];
+        String schema = parts[1];
+        String table = parts[2];
+        this.lastCheckedTable = table;
+        
+        String requestId = UUID.randomUUID().toString();
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .body(List.of(Map.of(
+                "id", requestId,
+                "catalogName", catalog,
+                "schemaName", schema,
+                "tableName", table,
+                "userId", sp,
+                "principalType", "SERVICE_PRINCIPAL",
+                "privileges", List.of(privilege),
+                "justification", "Testing SP"
+            )))
+            .post("/api/storage/requests");
+        lastResponse.then().statusCode(200);
+    }
+
+    @Then("the target principal should be {string} with type {string}")
+    public void target_principal_should_be(String principal, String type) {
+        givenAuth()
+            .get("/api/storage/requests")
+            .then()
+            .statusCode(200)
+            .body("[0].userId", equalTo(principal))
+            .body("[0].principalType", equalTo(type));
+    }
+
+    @When("she requests {string} on {string} \\(type: VOLUME)")
+    public void she_requests_volume(String privilege, String fullPath) {
+        String[] parts = fullPath.substring(1).split("/");
+        // Handle /catalog/schema/volume
+        String catalog = parts[0];
+        String schema = parts[1];
+        String volume = parts[2];
+        this.lastCheckedTable = volume;
+        
+        String requestId = UUID.randomUUID().toString();
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .body(List.of(Map.of(
+                "id", requestId,
+                "catalogName", catalog,
+                "schemaName", schema,
+                "tableName", volume,
+                "resourceType", "VOLUME",
+                "privileges", List.of(privilege),
+                "justification", "Testing Volume"
+            )))
+            .post("/api/storage/requests");
+        lastResponse.then().statusCode(200);
+    }
+
     @Given("{string} is logged in with groups {string}")
     public void user_is_logged_in_with_groups(String user, String groups) {
         i_am_authenticated_as_with_groups(user, groups);
@@ -602,8 +668,8 @@ public class StepDefinitions {
         currentToken = originalToken;
     }
 
-    @When("{string} who is in {string} denies the request")
-    public void approver_denies(String user, String group) {
+    @When("{string} who is in {string} denies the request with reason {string}")
+    public void approver_denies_with_reason(String user, String group, String reason) {
         String originalToken = currentToken;
         user_is_logged_in_with_groups(user, group);
         
@@ -616,10 +682,40 @@ public class StepDefinitions {
         
         lastResponse = givenAuth()
             .contentType(ContentType.JSON)
+            .body(Map.of("reason", reason))
             .post("/api/storage/requests/" + id + "/reject");
         lastResponse.then().statusCode(200);
         
         currentToken = originalToken;
+    }
+
+    @Then("the audit log should record the reason {string}")
+    public void audit_log_should_record_reason(String reason) {
+        givenAuth()
+            .get("/api/storage/requests")
+            .then()
+            .statusCode(200)
+            .body("[0].rejectionReason", equalTo(reason));
+    }
+
+    @Given("the request for {string} requires approval from {string}")
+    public void request_for_resource_requires_approval_from(String resource, String group) {
+        // This is a helper to set up a request if it doesn't exist, though usually we have one
+    }
+
+    @Given("{string} has a pending request for {string} \\(Owner: {word})")
+    public void request_for_resource_with_owner(String user, String resource, String owner) {
+        user_is_logged_in(user);
+        
+        String[] parts = resource.substring(1).split("/");
+        String catalog = parts[0];
+        String schema = parts[1];
+        String table = parts[2];
+        this.lastCheckedTable = table;
+        
+        // Since we are in tests, we might need to tell the mock provider about the owner
+        // For now, let's just submit the request
+        i_submit_a_request_for_catalog_schema_table_with_privileges(catalog, schema, table, "SELECT");
     }
 
     @Then("the request status should be {string}")

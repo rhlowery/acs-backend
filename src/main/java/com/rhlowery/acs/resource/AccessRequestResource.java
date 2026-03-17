@@ -59,6 +59,9 @@ public class AccessRequestResource {
         public String justification;
         public String requesterId;
         public String userId;
+        public String principalType;
+        public String resourceType;
+        public String rejectionReason;
         public List<String> approverGroups;
         public Long expirationTime;
         public Map<String, Object> _links;
@@ -71,8 +74,11 @@ public class AccessRequestResource {
             this.privileges = r.privileges();
             this.status = r.status();
             this.justification = r.justification();
+            this.rejectionReason = r.rejectionReason();
             this.requesterId = r.requesterId();
             this.userId = r.userId();
+            this.principalType = r.principalType();
+            this.resourceType = r.resourceType();
             this.approverGroups = r.approverGroups();
             this.expirationTime = r.expirationTime();
             Map<String, Object> links = new java.util.HashMap<>();
@@ -158,13 +164,37 @@ public class AccessRequestResource {
 
         for (AccessRequest r : requests) {
             String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
-            List<String> required = catalogService.getRequiredApprovers(r.catalogName(), path);
+            List<String> requiredApprovers = new ArrayList<>();
             
+            // 1. Resolve approvers from catalog
+            List<String> catalogApprovers = catalogService.getRequiredApprovers(r.catalogName(), path);
+            if (catalogApprovers != null) {
+                requiredApprovers.addAll(catalogApprovers);
+            }
+
+            // 2. Add governance-team if not present (Mandatory Governance)
+            if (!requiredApprovers.contains("governance-team")) {
+                requiredApprovers.add("governance-team");
+            }
+
             AccessRequest enriched = new AccessRequest(
-                r.id(), userId, r.userId() != null ? r.userId() : userId,
-                r.catalogName(), r.schemaName(), r.tableName(),
-                r.privileges(), (isAdmin && r.status() != null) ? r.status() : "PENDING", System.currentTimeMillis(), null,
-                r.justification(), required, new java.util.HashMap<>(), r.expirationTime()
+                r.id(),
+                userId,
+                r.userId() != null ? r.userId() : userId,
+                r.principalType() != null ? r.principalType() : "USER",
+                r.catalogName(),
+                r.schemaName(),
+                r.tableName(),
+                r.resourceType() != null ? r.resourceType() : "TABLE",
+                r.privileges(),
+                (isAdmin && r.status() != null) ? r.status() : "PENDING",
+                System.currentTimeMillis(),
+                null,
+                r.justification(),
+                null, // rejectionReason is null for new requests
+                requiredApprovers,
+                r.metadata() != null ? r.metadata() : new java.util.HashMap<>(),
+                r.expirationTime()
             );
             accessRequestService.saveRequests(List.of(enriched), userId, groups, isAdmin);
             lineageService.emitAccessRequestEvent(enriched, userId);
@@ -214,9 +244,9 @@ public class AccessRequestResource {
                 String newStatus = fullyApproved ? "APPROVED" : "PARTIALLY_APPROVED";
 
                 AccessRequest updated = new AccessRequest(
-                    r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
-                    r.privileges(), newStatus, r.createdAt(), System.currentTimeMillis(), 
-                    r.justification(), r.approverGroups(), meta, r.expirationTime()
+                    r.id(), r.requesterId(), r.userId(), r.principalType(), r.catalogName(), r.schemaName(), r.tableName(), 
+                    r.resourceType(), r.privileges(), newStatus, r.createdAt(), System.currentTimeMillis(), 
+                    r.justification(), r.rejectionReason(), r.approverGroups(), meta, r.expirationTime()
                 );
 
                 if (fullyApproved) {
@@ -237,13 +267,21 @@ public class AccessRequestResource {
             .orElse(Response.status(404).build());
     }
 
+    public static class RejectionRequest {
+        public String reason;
+    }
+
     @POST
     @Path("/{id}/reject")
-    @Operation(summary = "Reject access request", description = "Rejects a pending access request (Admins only)")
-    public Response rejectRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
+    @Operation(summary = "Reject access request", description = "Rejects a pending access request (Admins or designated approvers)")
+    public Response rejectRequest(@PathParam("id") String id, RejectionRequest rejection, @Context SecurityContext securityContext) {
         String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
         boolean isAdmin = groups.contains("admins");
+
+        if (rejection == null || rejection.reason == null || rejection.reason.isBlank()) {
+            return Response.status(400).entity(Map.of("error", "Rejection reason is mandatory")).build();
+        }
 
         List<String> userGroups = jwt.getGroups() != null ? new ArrayList<>(jwt.getGroups()) : Collections.emptyList();
         
@@ -255,9 +293,9 @@ public class AccessRequestResource {
                 }
 
                 AccessRequest rejected = new AccessRequest(
-                    r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
-                    r.privileges(), "REJECTED", r.createdAt(), System.currentTimeMillis(), 
-                    r.justification(), r.approverGroups(), r.metadata(), r.expirationTime()
+                    r.id(), r.requesterId(), r.userId(), r.principalType(), r.catalogName(), r.schemaName(), r.tableName(), 
+                    r.resourceType(), r.privileges(), "REJECTED", r.createdAt(), System.currentTimeMillis(), 
+                    r.justification(), rejection.reason, r.approverGroups(), r.metadata(), r.expirationTime()
                 );
                 accessRequestService.saveRequests(List.of(rejected), userId, groups, isAdmin);
                 lineageService.emitAccessRequestEvent(rejected, userId);
@@ -287,9 +325,9 @@ public class AccessRequestResource {
                 
                 if (verified) {
                     AccessRequest verifiedReq = new AccessRequest(
-                        r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
-                        r.privileges(), "VERIFIED", r.createdAt(), System.currentTimeMillis(), 
-                        r.justification(), r.approverGroups(), r.metadata(), r.expirationTime()
+                        r.id(), r.requesterId(), r.userId(), r.principalType(), r.catalogName(), r.schemaName(), r.tableName(), 
+                        r.resourceType(), r.privileges(), "VERIFIED", r.createdAt(), System.currentTimeMillis(), 
+                        r.justification(), r.rejectionReason(), r.approverGroups(), r.metadata(), r.expirationTime()
                     );
                     accessRequestService.saveRequests(List.of(verifiedReq), userId, groups, isAdmin);
                     broadcast("request-verified", verifiedReq);

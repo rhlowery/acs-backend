@@ -51,7 +51,10 @@ public abstract class AbstractMockProvider implements CatalogProvider {
     public CatalogNode getNode(String path) {
         if (path == null || "/".equals(path)) return new CatalogNode("root", NodeType.NAMESPACE, "/", implClass, List.of("admins"), "admin");
         if (path.contains("sensitive")) return new CatalogNode("sensitive_tbl", NodeType.TABLE, path, implClass, List.of("sensitive-approvers"), "data-governor");
+        if (path.contains("salaries")) return new CatalogNode("salaries", NodeType.TABLE, path, implClass, List.of("finance-leads"), "finance_lead");
         if (path.contains("finance")) return new CatalogNode("finance", NodeType.NAMESPACE, path, implClass, List.of("finance-approvers"), "finance_lead");
+        if (path.contains("staged")) return new CatalogNode("data_uploads", NodeType.VOLUME, path, implClass, List.of("data-governors"), "admin");
+        if (path.contains("model")) return new CatalogNode("risk-model", NodeType.MODEL, path, implClass, List.of("model-owners"), "admin");
         if (path.contains("default")) return new CatalogNode("default", NodeType.DATABASE, path, implClass, List.of("default-admins"), "admin");
         return new CatalogNode("node", NodeType.TABLE, path, implClass, List.of("admins"), "admin");
     }
