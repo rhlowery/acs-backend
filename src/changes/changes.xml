@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+    <properties>
+        <title>ACS Backend Changes</title>
+        <author email="admin@rhlowery.com">Admin</author>
+    </properties>
+    <body>
+        <release version="1.0.0-SNAPSHOT" date="2026-03-13" description="Initial implementation of Generic Catalog Interface">
+            <action dev="antigravity" type="add">
+                Implemented Generic Catalog Interface with multiple providers (Unity, Glue, Iceberg).
+            </action>
+            <action dev="antigravity" type="add">
+                Added pluggable SPI for catalog traversal and policy overlay.
+            </action>
+            <action dev="antigravity" type="fix">
+                Resolved various test failures and path mismatches in BFF.
+            </action>
+            <action dev="antigravity" type="update">
+                Enhanced observability with OpenTelemetry and OpenLineage.
+            </action>
+        </release>
+    </body>
+</document>

@@ -11,15 +11,32 @@ import jakarta.ws.rs.core.SecurityContext;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import com.rhlowery.acs.service.IdentityProvider;
 
 @Path("/api/auth")
 @Produces(MediaType.APPLICATION_JSON)
+@Tag(name = "Authentication", description = "Endpoints for user login, logout and profile")
 public class AuthResource {
 
     private static final Logger LOG = Logger.getLogger(AuthResource.class);
+
+    @Inject
+    jakarta.enterprise.inject.Instance<IdentityProvider> providersInstance;
+
+    private List<IdentityProvider> providers;
+
+    @jakarta.annotation.PostConstruct
+    void init() {
+        this.providers = providersInstance.stream().collect(Collectors.toList());
+    }
 
     @Inject
     JsonWebToken jwt;
@@ -28,6 +45,9 @@ public class AuthResource {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
+    @Operation(summary = "Login", description = "Authenticates a user and returns a JWT in a cookie")
+    @APIResponse(responseCode = "200", description = "Login successful")
+    @APIResponse(responseCode = "400", description = "Invalid input")
     public Response login(Map<String, Object> body) {
         try {
             String userId = (String) body.get("userId");
@@ -40,8 +60,31 @@ public class AuthResource {
             @SuppressWarnings("unchecked")
             List<String> groups = (List<String>) body.getOrDefault("groups", List.of());
 
+            String providerId = (String) body.get("providerId");
+            if (providerId != null) {
+                LOG.info("Login via provider: " + providerId);
+                IdentityProvider provider = providers.stream()
+                    .filter(p -> providerId.equals(p.getId()))
+                    .findFirst()
+                    .orElse(null);
+                
+                if (provider == null) {
+                    return Response.status(400).entity(Map.of("error", "Unknown provider: " + providerId)).build();
+                }
+
+                Optional<Map<String, Object>> authResult = provider.authenticate(body);
+                if (authResult.isEmpty()) {
+                    return Response.status(401).entity(Map.of("error", "Invalid credentials for " + providerId)).build();
+                }
+
+                userId = (String) authResult.get().get("userId");
+                groups = provider.getGroups(userId);
+                role = groups.contains("admins") ? "ADMIN" : "STANDARD_USER";
+            }
+
             String token = Jwt.issuer("unity-catalog-acs-bff")
                 .upn(userId)
+                .subject(userId)
                 .groups(new HashSet<>(groups))
                 .claim("userId", userId)
                 .claim("userName", userName)
@@ -56,8 +99,8 @@ public class AuthResource {
                 .maxAge(3600)
                 .build();
 
-            LOG.info("Login successful for " + userId + ". Token first chars: " + token.substring(0, Math.min(token.length(), 10)));
-            return Response.ok(Map.of("status", "success", "userId", userId, "role", role))
+            LOG.info("Login successful for " + userId + (providerId != null ? " via " + providerId : "") + ". Token first chars: " + token.substring(0, Math.min(token.length(), 10)));
+            return Response.ok(Map.of("status", "success", "userId", userId, "role", role, "providerId", providerId != null ? providerId : "local"))
                 .cookie(cookie)
                 .build();
         } catch (Exception e) {
@@ -69,6 +112,8 @@ public class AuthResource {
     @POST
     @Path("/logout")
     @PermitAll
+    @Operation(summary = "Logout", description = "Clears the authentication cookie")
+    @APIResponse(responseCode = "200", description = "Logout successful")
     public Response logout() {
         NewCookie cookie = new NewCookie.Builder("bff_jwt")
             .value("")
@@ -80,11 +125,32 @@ public class AuthResource {
 
     @GET
     @Path("/me")
+    @Operation(summary = "GetCurrentUser", description = "Returns the profile of the currently authenticated user")
+    @APIResponse(responseCode = "200", description = "Success")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     public Response me(@Context SecurityContext securityContext) {
         if (securityContext.getUserPrincipal() == null) {
             LOG.warn("No principal found in /me");
             return Response.status(401).entity(Map.of("error", "Not authenticated")).build();
         }
-        return Response.ok(Map.of("authenticated", true, "userId", securityContext.getUserPrincipal().getName())).build();
+        return Response.ok(Map.of(
+            "authenticated", true, 
+            "userId", securityContext.getUserPrincipal().getName(),
+            "groups", jwt.getGroups() != null ? jwt.getGroups() : List.of()
+        )).build();
+    }
+
+    @GET
+    @Path("/providers")
+    @Operation(summary = "List identity providers", description = "Returns a list of all supported 3rd-party identity providers")
+    public Response listProviders() {
+        List<Map<String, String>> providerList = providers.stream()
+            .map(p -> Map.of(
+                "id", p.getId(),
+                "name", p.getName(),
+                "type", p.getType()
+            ))
+            .collect(Collectors.toList());
+        return Response.ok(providerList).build();
     }
 }

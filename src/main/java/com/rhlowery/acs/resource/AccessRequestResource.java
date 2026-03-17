@@ -6,24 +6,28 @@ import com.rhlowery.acs.infrastructure.LineageService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.stream.Collectors;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 import jakarta.ws.rs.sse.OutboundSseEvent;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 
-@Path("/api/storage")
+@jakarta.enterprise.context.ApplicationScoped
+@Path("/api/storage/requests")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Access Requests", description = "Endpoints for managing the lifecycle of data access requests")
 public class AccessRequestResource {
 
     private static final Logger LOG = Logger.getLogger(AccessRequestResource.class);
@@ -35,226 +39,216 @@ public class AccessRequestResource {
     LineageService lineageService;
 
     @Inject
+    com.rhlowery.acs.service.CatalogService catalogService;
+
+    @Inject
     JsonWebToken jwt;
 
     @Context
     Sse sse;
 
-    @Context
-    HttpHeaders headers;
+    private final List<SseEventSink> sinks = new CopyOnWriteArrayList<>();
 
-    private static final List<SseEventSink> sinks = new CopyOnWriteArrayList<>();
-
-    private void logInfo(String method) {
-        LOG.info("Method: " + method);
-        if (headers != null) {
-            headers.getRequestHeaders().forEach((k, v) -> LOG.info("Header: " + k + " = " + v));
-        }
-        if (jwt != null) {
-            LOG.info("JWT present: " + (jwt.getName() != null) + ", Name: " + jwt.getName());
-        }
-    }
-
-    @GET
-    @Path("/requests/stream")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void stream(@Context SseEventSink eventSink) {
-        if (sse != null) {
-            try {
-                eventSink.send(sse.newEventBuilder().data("{\"type\": \"CONNECTED\"}").build());
-            } catch (Exception e) {
-                LOG.error("Failed to send connection event", e);
-            }
-        }
-        sinks.add(eventSink);
-    }
-
-    private void notifyClients() {
-        if (sse == null) {
-            LOG.warn("Sse context is null, cannot notify clients");
-            return;
-        }
-        for (SseEventSink sink : sinks) {
-            if (sink.isClosed()) {
-                sinks.remove(sink);
-                continue;
-            }
-            try {
-                OutboundSseEvent event = sse.newEventBuilder()
-                        .name("message")
-                        .data("{\"type\": \"UPDATE\"}")
-                        .build();
-                sink.send(event);
-            } catch (Exception e) {
-                LOG.error("Failed to send SSE event", e);
-                sinks.remove(sink);
-            }
-        }
-    }
-
-    private List<String> getGroups() {
-        try {
-            if (jwt == null) return List.of();
-            return (jwt.getGroups() != null) ? new ArrayList<>(jwt.getGroups()) : List.of();
-        } catch (Exception e) {
-            return List.of();
-        }
-    }
-
-    private boolean isUserAdmin() {
-        try {
-            if (jwt == null || jwt.getName() == null) {
-                LOG.warn("No valid JWT principal found");
-                return false;
-            }
-            List<String> groups = getGroups();
-            String role = jwt.getClaim("role") != null ? jwt.getClaim("role").toString() : "STANDARD_USER";
-            LOG.info("Checking admin for user: " + jwt.getName() + " with role: " + role + " and groups: " + groups);
-            return "ADMIN".equals(role) || groups.contains("admins") || groups.contains("admin");
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @GET
-    @Path("/requests")
-    public Response getRequests(@Context SecurityContext securityContext) {
-        logInfo("getRequests");
-        String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
-        List<String> groups = getGroups();
-        boolean isAdmin = isUserAdmin();
-
-        List<AccessRequest> requests = accessRequestService.getAllRequests(userId, groups, isAdmin);
+    public static class HalAccessRequest {
+        public String id;
+        public String catalogName;
+        public String schemaName;
+        public String tableName;
+        public List<String> privileges;
+        public String status;
+        public String justification;
+        public Map<String, Object> _links;
         
-        List<Map<String, Object>> halRequests = requests.stream().map(this::toHal).collect(Collectors.toList());
+        public HalAccessRequest(AccessRequest r) {
+            this.id = r.id();
+            this.catalogName = r.catalogName();
+            this.schemaName = r.schemaName();
+            this.tableName = r.tableName();
+            this.privileges = r.privileges();
+            this.status = r.status();
+            this.justification = r.justification();
+            Map<String, Object> links = new java.util.HashMap<>();
+            links.put("self", Map.of("href", "/api/storage/requests/" + r.id()));
+            if ("PENDING".equals(r.status())) {
+                links.put("approve", Map.of("href", "/api/storage/requests/" + r.id() + "/approve"));
+                links.put("reject", Map.of("href", "/api/storage/requests/" + r.id() + "/reject"));
+            } else if ("APPROVED".equals(r.status())) {
+                links.put("verify", Map.of("href", "/api/storage/requests/" + r.id() + "/verify"));
+            }
+            this._links = links;
+        }
+    }
 
+    @GET
+    @Path("/stream")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    @Operation(summary = "Stream requests", description = "Provides a Server-Sent Events stream for real-time access request updates")
+    public Response stream(@Context SseEventSink eventSink) {
+        if (sse != null) {
+            sinks.add(eventSink);
+            OutboundSseEvent event = sse.newEventBuilder()
+                .name("connected")
+                .data("SSE stream active")
+                .build();
+            eventSink.send(event);
+        }
+        return Response.ok().build();
+    }
+
+    private void broadcast(String name, Object data) {
+        if (sse != null) {
+            OutboundSseEvent event = sse.newEventBuilder()
+                .name(name)
+                .data(data)
+                .build();
+            sinks.removeIf(sink -> {
+                try {
+                    sink.send(event);
+                    return false;
+                } catch (Exception e) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    @GET
+    @Operation(summary = "List access requests", description = "Returns a list of all access requests with HATEOAS links")
+    public Response getRequests(@Context SecurityContext securityContext) {
+        String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
+        List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
+        boolean isAdmin = groups.contains("admins");
+        
+        LOG.infof("Listing requests for user: %s, isAdmin=%b", userId, isAdmin);
+        List<HalAccessRequest> halRequests = accessRequestService.getAllRequests(userId, groups, isAdmin).stream()
+            .map(HalAccessRequest::new)
+            .collect(Collectors.toList());
+            
         return Response.ok(halRequests).build();
     }
+
     @GET
-    @Path("/requests/{id}")
-    public Response getRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
-        logInfo("getRequest: " + id);
+    @Path("/{id}")
+    @Operation(summary = "Get access request details", description = "Returns details for a specific access request with HATEOAS links")
+    public Response getRequest(@PathParam("id") String id) {
         return accessRequestService.getRequestById(id)
-            .map(this::toHal)
-            .map(Response::ok)
-            .orElseGet(() -> Response.status(404).entity(Map.of("error", "Request not found")))
+            .map(r -> Response.ok(new HalAccessRequest(r)))
+            .orElse(Response.status(404))
             .build();
     }
 
     @POST
-    @Path("/requests")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Submit access requests", description = "Submits one or more access requests for review")
     public Response createRequests(List<AccessRequest> requests, @Context SecurityContext securityContext) {
-        try {
-            logInfo("createRequests");
-            String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
-            List<String> groups = getGroups();
-            boolean isAdmin = isUserAdmin();
-
-            accessRequestService.saveRequests(requests, userId, groups, isAdmin);
-            try {
-                requests.forEach(r -> lineageService.emitAccessRequestEvent(r, "SUBMITTED"));
-            } catch (Exception e) {
-                LOG.error("Failed to emit lineage event", e);
-            }
-            notifyClients();
-            return Response.ok(Map.of("status", "success", "count", requests.size())).build();
-        } catch (Exception e) {
-            LOG.error("Error creating requests", e);
-            return Response.status(500).entity(Map.of("error", e.getMessage())).build();
+        if (requests == null || requests.isEmpty()) {
+            return Response.status(400).entity(Map.of("error", "Request list cannot be empty")).build();
         }
-    }
-
-    @POST
-    @Path("/requests/{id}/approve")
-    public Response approveRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
-        try {
-            logInfo("approveRequest");
-            if (!isUserAdmin()) {
-                return Response.status(403).entity(Map.of("error", "Forbidden: Only admins can approve requests")).build();
-            }
-            LOG.info("Approving request: " + id);
-            AccessRequest existing = accessRequestService.getRequestById(id)
-                .orElseThrow(() -> new NotFoundException("Request not found: " + id));
-            
-            AccessRequest approved = new AccessRequest(
-                existing.id(), existing.requesterId(), existing.userId(),
-                existing.catalogName(), existing.schemaName(), existing.tableName(),
-                existing.privileges(), "APPROVED", existing.createdAt(), System.currentTimeMillis(),
-                existing.justification(), existing.approverGroups(), existing.metadata()
-            );
-            
-            accessRequestService.saveRequests(List.of(approved), "system", List.of("admins"), true);
-            try {
-                lineageService.emitAccessRequestEvent(approved, "APPROVED");
-            } catch (Exception e) {
-                LOG.error("Failed to emit lineage event", e);
-            }
-            notifyClients();
-            return Response.ok(Map.of("status", "success")).build();
-        } catch (WebApplicationException e) {
-            throw e;
-        } catch (Exception e) {
-            LOG.error("Error approving request: " + id, e);
-            return Response.status(500).entity(Map.of("error", e.getMessage())).build();
-        }
-    }
-
-    @POST
-    @Path("/requests/{id}/reject")
-    public Response rejectRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
-        try {
-            logInfo("rejectRequest");
-            if (!isUserAdmin()) {
-                return Response.status(403).entity(Map.of("error", "Forbidden: Only admins can reject requests")).build();
-            }
-            LOG.info("Rejecting request: " + id);
-            AccessRequest existing = accessRequestService.getRequestById(id)
-                .orElseThrow(() -> new NotFoundException("Request not found: " + id));
-            
-            AccessRequest rejected = new AccessRequest(
-                existing.id(), existing.requesterId(), existing.userId(),
-                existing.catalogName(), existing.schemaName(), existing.tableName(),
-                existing.privileges(), "REJECTED", existing.createdAt(), System.currentTimeMillis(),
-                existing.justification(), existing.approverGroups(), existing.metadata()
-            );
-            
-            accessRequestService.saveRequests(List.of(rejected), "system", List.of("admins"), true);
-            try {
-                lineageService.emitAccessRequestEvent(rejected, "REJECTED");
-            } catch (Exception e) {
-                LOG.error("Failed to emit lineage event", e);
-            }
-            notifyClients();
-            return Response.ok(Map.of("status", "success")).build();
-        } catch (WebApplicationException e) {
-            throw e;
-        } catch (Exception e) {
-            LOG.error("Error rejecting request: " + id, e);
-            return Response.status(500).entity(Map.of("error", e.getMessage())).build();
-        }
-    }
-
-    private Map<String, Object> toHal(AccessRequest r) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", r.id());
-        map.put("requesterId", r.requesterId());
-        map.put("userId", r.userId());
-        map.put("catalogName", r.catalogName());
-        map.put("schemaName", r.schemaName());
-        map.put("tableName", r.tableName());
-        map.put("privileges", r.privileges());
-        map.put("status", r.status());
-        map.put("createdAt", r.createdAt());
-        map.put("justification", r.justification());
         
-        Map<String, Object> links = new HashMap<>();
-        links.put("self", Map.of("href", "/api/storage/requests/" + r.id()));
-        if ("PENDING".equals(r.status())) {
-            links.put("approve", Map.of("href", "/api/storage/requests/" + r.id() + "/approve"));
-            links.put("reject", Map.of("href", "/api/storage/requests/" + r.id() + "/reject"));
+        String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
+        List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
+        boolean isAdmin = groups.contains("admins");
+
+        accessRequestService.saveRequests(requests, userId, groups, isAdmin);
+        requests.forEach(r -> lineageService.emitAccessRequestEvent(r, userId));
+        
+        broadcast("request-created", requests);
+        return Response.ok(Map.of("status", "success", "count", requests.size())).build();
+    }
+
+    @POST
+    @Path("/{id}/approve")
+    @Operation(summary = "Approve access request", description = "Approves a pending access request (Admins only)")
+    public Response approveRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
+        String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
+        List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
+        boolean isAdmin = groups.contains("admins");
+
+        if (!isAdmin) {
+            return Response.status(403).entity(Map.of("error", "Only admins can approve requests")).build();
         }
-        map.put("_links", links);
-        return map;
+
+        return accessRequestService.getRequestById(id)
+            .map(r -> {
+                AccessRequest approved = new AccessRequest(
+                    r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
+                    r.privileges(), "APPROVED", r.createdAt(), System.currentTimeMillis(), 
+                    r.justification(), r.approverGroups(), r.metadata()
+                );
+                // Orchestrate policy application synchronously
+                try {
+                    String principal = r.userId() != null ? r.userId() : r.requesterId();
+                    String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
+                    catalogService.applyPolicy(r.catalogName(), path, r.privileges().get(0), principal);
+                } catch (Exception e) {
+                    LOG.error("Failed to orchestrate policy", e);
+                }
+
+                accessRequestService.saveRequests(List.of(approved), userId, groups, isAdmin);
+                lineageService.emitAccessRequestEvent(approved, userId);
+                broadcast("request-approved", approved);
+                return Response.ok(new HalAccessRequest(approved)).build();
+            })
+            .orElse(Response.status(404).build());
+    }
+
+    @POST
+    @Path("/{id}/reject")
+    @Operation(summary = "Reject access request", description = "Rejects a pending access request (Admins only)")
+    public Response rejectRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
+        String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
+        List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
+        boolean isAdmin = groups.contains("admins");
+
+        if (!isAdmin) {
+            return Response.status(403).entity(Map.of("error", "Only admins can reject requests")).build();
+        }
+
+        return accessRequestService.getRequestById(id)
+            .map(r -> {
+                AccessRequest rejected = new AccessRequest(
+                    r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
+                    r.privileges(), "REJECTED", r.createdAt(), System.currentTimeMillis(), 
+                    r.justification(), r.approverGroups(), r.metadata()
+                );
+                accessRequestService.saveRequests(List.of(rejected), userId, groups, isAdmin);
+                lineageService.emitAccessRequestEvent(rejected, userId);
+                broadcast("request-rejected", rejected);
+                return Response.ok(new HalAccessRequest(rejected)).build();
+            })
+            .orElse(Response.status(404).build());
+    }
+
+    @POST
+    @Path("/{id}/verify")
+    @Operation(summary = "Verify access request", description = "Verifies that an approved access request has been implemented in the target catalog")
+    public Response verifyRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
+        String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
+        List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
+        boolean isAdmin = groups.contains("admins");
+
+        return accessRequestService.getRequestById(id)
+            .map(r -> {
+                if (!"APPROVED".equals(r.status())) {
+                    return Response.status(400).entity(Map.of("error", "Only approved requests can be verified")).build();
+                }
+                
+                String principal = r.userId() != null ? r.userId() : r.requesterId();
+                String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
+                boolean verified = catalogService.verifyPolicy(r.catalogName(), path, r.privileges().get(0), principal);
+                
+                if (verified) {
+                    AccessRequest verifiedReq = new AccessRequest(
+                        r.id(), r.requesterId(), r.userId(), r.catalogName(), r.schemaName(), r.tableName(), 
+                        r.privileges(), "VERIFIED", r.createdAt(), System.currentTimeMillis(), 
+                        r.justification(), r.approverGroups(), r.metadata()
+                    );
+                    accessRequestService.saveRequests(List.of(verifiedReq), userId, groups, isAdmin);
+                    broadcast("request-verified", verifiedReq);
+                    return Response.ok(new HalAccessRequest(verifiedReq)).build();
+                } else {
+                    return Response.status(409).entity(Map.of("error", "Drift detected: Permissions not yet implemented in target catalog")).build();
+                }
+            })
+            .orElse(Response.status(404).build());
     }
 }

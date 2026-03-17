@@ -1,97 +1,66 @@
 package com.rhlowery.acs.resource;
 
-import com.rhlowery.acs.infrastructure.DatabricksClient;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import java.util.Map;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 
+@jakarta.enterprise.context.ApplicationScoped
 @Path("/api")
 @Produces(MediaType.APPLICATION_JSON)
+@Tag(name = "Proxy", description = "Discovery and SQL proxy endpoints for Databricks and Unity Catalog")
 public class ProxyResource {
 
     private static final Logger LOG = Logger.getLogger(ProxyResource.class);
 
-    @Inject
-    @RestClient
-    DatabricksClient databricksClient;
+    @jakarta.inject.Inject
+    @org.eclipse.microprofile.rest.client.inject.RestClient
+    com.rhlowery.acs.infrastructure.DatabricksClient databricksClient;
 
     @GET
     @Path("/sdk/{target}")
-    public Response sdkFetch(
-        @PathParam("target") String target,
-        @HeaderParam("x-workspace-host") String host,
-        @QueryParam("catalog_name") String catalogName,
-        @QueryParam("schema_name") String schemaName,
-        @QueryParam("max_results") Integer maxResults,
-        @QueryParam("page_token") String pageToken,
-        @Context SecurityContext securityContext
-    ) {
-        String token = "Bearer mock-token";
+    @Operation(summary = "Proxy SDK fetch", description = "Proxies a fetch request to the Databricks Unity Catalog SDK placeholder")
+    public Response sdkFetch(@PathParam("target") String target, 
+                            @HeaderParam("x-workspace-host") String host,
+                            @HeaderParam("Authorization") String auth) {
+        LOG.infof("SDK Fetch: target=%s host=%s", target, host);
         try {
-            Map<String, Object> result = databricksClient.fetchFromUC(target, token, maxResults != null ? maxResults : 1000, pageToken, catalogName, schemaName);
-            return Response.ok(result).build();
+            Map<String, Object> response = databricksClient.fetchFromUC(target, auth, 10, null, null, null);
+            return Response.ok(response).build();
         } catch (Exception e) {
-            LOG.error("SDK fetch failed for " + target, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", e.getMessage())).build();
-        }
-    }
-
-    @GET
-    @Path("/catalog/search")
-    public Response searchCatalog(
-        @QueryParam("q") String query,
-        @HeaderParam("x-workspace-host") String host
-    ) {
-        String token = "Bearer mock-token";
-        try {
-            Map<String, Object> result = databricksClient.fetchFromUC("tables", token, 1000, null, null, null);
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> allTables = (List<Map<String, Object>>) result.getOrDefault("tables", List.of());
-            
-            String q = query != null ? query.toLowerCase() : "";
-            List<Map<String, Object>> filtered = allTables.stream()
-                .filter(t -> (t.get("name") != null && t.get("name").toString().toLowerCase().contains(q)) ||
-                             (t.get("catalog_name") != null && t.get("catalog_name").toString().toLowerCase().contains(q)) ||
-                             (t.get("schema_name") != null && t.get("schema_name").toString().toLowerCase().contains(q)))
-                .limit(100)
-                .collect(Collectors.toList());
-
-            return Response.ok(Map.of("results", filtered)).build();
-        } catch (Exception e) {
-            LOG.error("Search failed", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "Search failed: " + e.getMessage())).build();
-        }
-    }
-
-    @POST
-    @Path("/sql/execute")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response executeSql(com.rhlowery.acs.domain.SqlRequest body) {
-        if (body == null || body.statement() == null) {
-            return Response.status(400).entity(Map.of("error", "Missing SQL statement")).build();
-        }
-        String token = "Bearer mock-token";
-        try {
-            Map<String, Object> result = databricksClient.executeSql(token, body);
-            return Response.ok(result).build();
-        } catch (Exception e) {
-            LOG.error("SQL execution failed", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", e.getMessage())).build();
+            LOG.error("SDK Fetch error", e);
+            return Response.status(500).entity(Map.of("error", e.getMessage())).build();
         }
     }
 
     @GET
     @Path("/uc/{path: .*}")
-    public Response ucProxy(@PathParam("path") String path, @HeaderParam("x-workspace-host") String host) {
-        return Response.status(Response.Status.NOT_IMPLEMENTED).entity(Map.of("error", "Generic UC proxying not fully implemented")).build();
+    @Operation(summary = "Proxy Unity Catalog request", description = "Proxies a generic request to the Unity Catalog API placeholder")
+    public Response ucProxy(@PathParam("path") String path) {
+        LOG.infof("UC Proxy: path=%s", path);
+        return Response.status(501).entity(Map.of("error", "Not implemented", "path", path)).build();
+    }
+
+    @POST
+    @Path("/sql/execute")
+    @Operation(summary = "Execute SQL", description = "Proxies a SQL execution request to the Databricks SQL Warehouse placeholder")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response executeSql(Map<String, Object> request, @HeaderParam("Authorization") String auth) {
+        String statement = (String) request.get("statement");
+        if (statement == null || statement.trim().isEmpty()) {
+            return Response.status(400).entity(Map.of("error", "Empty statement")).build();
+        }
+        LOG.infof("SQL Execute: %s", statement);
+        try {
+            com.rhlowery.acs.domain.SqlRequest sqlReq = new com.rhlowery.acs.domain.SqlRequest(statement, null);
+            Map<String, Object> response = databricksClient.executeSql(auth, sqlReq);
+            return Response.ok(response).build();
+        } catch (Exception e) {
+            LOG.error("SQL Execute error", e);
+            return Response.status(500).entity(Map.of("error", e.getMessage())).build();
+        }
     }
 }

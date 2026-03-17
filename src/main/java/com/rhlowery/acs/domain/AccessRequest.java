@@ -11,7 +11,7 @@ public record AccessRequest(
     String schemaName,
     String tableName,
     List<String> privileges,
-    String status, // PENDING, APPROVED, REJECTED
+    String status, // PENDING, APPROVED, REJECTED, VERIFIED
     Long createdAt,
     Long updatedAt,
     String justification,

@@ -9,6 +9,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Objects;
 
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
 public class MockAccessRequestService implements AccessRequestService {
     private final Map<String, AccessRequest> storage = new ConcurrentHashMap<>();
 
@@ -37,7 +41,7 @@ public class MockAccessRequestService implements AccessRequestService {
                     req.schemaName(),
                     req.tableName(),
                     req.privileges(),
-                    "PENDING",
+                    isAdmin && req.status() != null ? req.status() : "PENDING",
                     System.currentTimeMillis(),
                     null,
                     req.justification(),
@@ -77,5 +81,10 @@ public class MockAccessRequestService implements AccessRequestService {
     @Override
     public Optional<AccessRequest> getRequestById(String id) {
         return Optional.ofNullable(storage.get(id));
+    }
+
+    @Override
+    public void clear() {
+        storage.clear();
     }
 }
