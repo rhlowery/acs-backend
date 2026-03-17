@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.*;
 public class CatalogStepDefinitions {
 
     private Response lastResponse;
+    private String lastPrincipal;
 
     private io.restassured.specification.RequestSpecification givenAuth() {
         return RestAssured.given()
@@ -21,9 +22,8 @@ public class CatalogStepDefinitions {
     @When("I request the children of path {string} from catalog {string}")
     public void i_request_the_children_of_path_from_catalog(String path, String catalogId) {
         lastResponse = givenAuth()
-            .queryParam("catalogId", catalogId)
             .queryParam("path", path)
-            .get("/api/catalog/nodes");
+            .get("/api/catalog/" + catalogId + "/nodes");
     }
 
     @Then("the response should contain the node {string}")
@@ -41,23 +41,24 @@ public class CatalogStepDefinitions {
         lastResponse.then().body("implementation", hasItem(impl));
     }
 
-    @Given("there is a catalog node at path {string}")
-    public void there_is_a_catalog_node_at_path(String path) {
+    @Given("there is a catalog node at path {string} in catalog {string}")
+    public void there_is_a_catalog_node_at_path_in_catalog(String path, String catalogId) {
         givenAuth()
             .queryParam("path", path)
-            .get("/api/catalog/nodes/verify")
+            .get("/api/catalog/" + catalogId + "/nodes/verify")
             .then().statusCode(200);
     }
 
-    @When("I {word} access for principal {string} on node {string}")
-    public void i_action_access_for_principal_on_node(String action, String principal, String path) {
+    @When("I {word} access for principal {string} on node {string} in catalog {string}")
+    public void i_action_access_for_principal_on_node_in_catalog(String action, String principal, String path, String catalogId) {
+        this.lastPrincipal = principal;
         lastResponse = givenAuth()
             .body(Map.of(
                 "action", action,
                 "principal", principal,
                 "path", path
             ))
-            .post("/api/catalog/nodes/policy");
+            .post("/api/catalog/" + catalogId + "/nodes/policy");
     }
 
     @Then("the audit log should record the {string} event")
@@ -69,18 +70,16 @@ public class CatalogStepDefinitions {
             .statusCode(200);
     }
 
-    @Then("the node {string} should have effective permissions {string}")
-    public void the_node_should_have_effective_permissions(String path, String permissions) {
-        // Extract principal from previous step if we were tracking context, 
-        // for mock we use standard ones from feature file
-        String principal = "alice"; 
-        if (path.contains("hr")) principal = "bob";
-        if (path.contains("sys")) principal = "charlie";
+    @Then("the node {string} in catalog {string} should have effective permissions {string}")
+    public void the_node_in_catalog_should_have_effective_permissions(String path, String catalogId, String permissions) {
+        String principal = lastPrincipal != null ? lastPrincipal : "alice"; 
+        if (principal.equals("alice") && path.contains("hr")) principal = "bob";
+        if (principal.equals("alice") && path.contains("sys")) principal = "charlie";
 
         givenAuth()
             .queryParam("path", path)
             .queryParam("principal", principal)
-            .get("/api/catalog/nodes/permissions")
+            .get("/api/catalog/" + catalogId + "/nodes/permissions")
             .then()
             .statusCode(200)
             .body("effective", equalTo(permissions));

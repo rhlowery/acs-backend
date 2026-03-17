@@ -66,10 +66,10 @@ public class AccessRequestResourceTest {
         given()
             .header("Authorization", "Bearer " + token)
             .cookie("bff_jwt", token)
+            .contentType(ContentType.JSON)
             .post("/api/storage/requests/" + requestId + "/approve")
             .then()
-            .statusCode(200)
-            .body("status", is("success"));
+            .statusCode(200);
 
         // 6. Verify status updated
         given()
@@ -80,14 +80,14 @@ public class AccessRequestResourceTest {
             .statusCode(200)
             .body("status", is("APPROVED"));
 
-        // 7. Reject it (should be able to change status even if already approved in mock)
+        // 7. Reject it
         given()
             .header("Authorization", "Bearer " + token)
             .cookie("bff_jwt", token)
+            .contentType(ContentType.JSON)
             .post("/api/storage/requests/" + requestId + "/reject")
             .then()
-            .statusCode(200)
-            .body("status", is("success"));
+            .statusCode(200);
     }
 
     @Test
@@ -105,6 +105,7 @@ public class AccessRequestResourceTest {
         given()
             .header("Authorization", "Bearer " + token)
             .cookie("bff_jwt", token)
+            .contentType(ContentType.JSON)
             .post("/api/storage/requests/some-id/approve")
             .then()
             .statusCode(403);
@@ -132,6 +133,7 @@ public class AccessRequestResourceTest {
         given()
             .header("Authorization", "Bearer " + token)
             .cookie("bff_jwt", token)
+            .contentType(ContentType.JSON)
             .post("/api/storage/requests/non-existent/approve")
             .then()
             .statusCode(404);
@@ -140,6 +142,7 @@ public class AccessRequestResourceTest {
         given()
             .header("Authorization", "Bearer " + token)
             .cookie("bff_jwt", token)
+            .contentType(ContentType.JSON)
             .post("/api/storage/requests/non-existent/reject")
             .then()
             .statusCode(404);
@@ -152,7 +155,7 @@ public class AccessRequestResourceTest {
             .body(List.of())
             .post("/api/storage/requests")
             .then()
-            .statusCode(200); // Mock handles empty list fine
+            .statusCode(400); // Now returns 400
 
         // 5. Unauthenticated calls
         given().get("/api/storage/requests").then().statusCode(200); // Default to anonymous

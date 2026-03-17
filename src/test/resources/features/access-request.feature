@@ -14,6 +14,11 @@ Feature: Access Request Management
       | alice | consumers | main    | default | users | SELECT     |
       | bob   | users     | prod    | data    | sales | READ       |
       | carol | guest     | public  | info    | help  | USAGE      |
+      | daryl | polaris   | polaris | cat     | tab   | SELECT     |
+      | edgar | datahub   | datahub | db      | tbl   | READ       |
+      | frank | gravitino | grav    | ns      | obj   | USAGE      |
+      | grace | atlan     | atlan   | assets  | item  | SELECT     |
+      | henry | hive      | hive    | default | tests | READ       |
 
   Scenario Outline: Approvers visibility and retrieval
     Given I am authenticated as "<user>" with groups "<groups>"
@@ -36,5 +41,5 @@ Feature: Access Request Management
     Examples:
       | action                                           | status |
       | try to approve a non-existent request "invalid"  | 404    |
-      | submit an empty request list                     | 200    |
+      | submit an empty request list                     | 400    |
       | call the stream endpoint                         | 200    |

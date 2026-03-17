@@ -74,5 +74,25 @@ public class AuthResourceTest {
             .post("/api/auth/login")
             .then()
             .statusCode(415);
+
+        // 4. Provider not found
+        given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("userId", "test", "providerId", "non-existent"))
+            .post("/api/auth/login")
+            .then()
+            .statusCode(400);
+
+        // 5. Provider auth failed (using a mocked failure scenario if possible, 
+        // or just testing the branch if we have a provider that can fail)
+        // For now, let's just trigger the 'providerId != null' path
+    }
+    
+    @Test
+    public void testMeUnauthenticated() {
+        given()
+            .get("/api/auth/me")
+            .then()
+            .statusCode(401);
     }
 }

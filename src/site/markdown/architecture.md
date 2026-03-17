@@ -29,6 +29,18 @@ Available implementations include:
 *   **GlueNodeProvider**
 *   **DatabricksNodeProvider**
 *   **IcebergNodeProvider**
+*   **PolarisNodeProvider**
+*   **DataHubNodeProvider**
+*   **GravitinoNodeProvider**
+*   **AtlanNodeProvider**
+*   **HiveMetastoreNodeProvider**
+
+## Dynamic Catalog Registration
+
+In addition to static provider discovery via ServiceLoader, the system supports dynamic registration of catalog connections through the `/api/catalog/registrations` API. This allows for:
+*   **On-the-fly onboarding**: Registering new catalog instances without restarting the service.
+*   **Dynamic Settings**: Managing connection parameters (hosts, ports, credentials) for individual catalog registrations.
+*   **Lifecycle Management**: Full CRUD operations for catalog connections.
 
 ## Technical Stack
 

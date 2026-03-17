@@ -18,11 +18,10 @@ public class ProxyResourceTest {
 
     @Test
     public void testSdkFetchSuccess() {
-        when(databricksClient.fetchFromUC(anyString(), anyString(), anyInt(), any(), any(), any()))
+        when(databricksClient.fetchFromUC(any(), any(), any(), any(), any(), any()))
             .thenReturn(java.util.Map.of("data", "test"));
             
         given()
-            .header("Authorization", "Bearer test")
             .header("x-workspace-host", "test-host")
             .get("/api/sdk/catalogs")
             .then()
@@ -31,7 +30,7 @@ public class ProxyResourceTest {
 
     @Test
     public void testSqlExecuteSuccess() {
-        when(databricksClient.executeSql(anyString(), any()))
+        when(databricksClient.executeSql(any(), any()))
             .thenReturn(java.util.Map.of("data", "test"));
             
         given()
@@ -53,11 +52,10 @@ public class ProxyResourceTest {
 
     @Test
     public void testSdkFetchError() {
-        when(databricksClient.fetchFromUC(anyString(), anyString(), anyInt(), any(), any(), any()))
+        when(databricksClient.fetchFromUC(any(), any(), any(), any(), any(), any()))
             .thenThrow(new RuntimeException("SDK Error"));
             
         given()
-            .header("Authorization", "Bearer test")
             .header("x-workspace-host", "test-host")
             .get("/api/sdk/catalogs")
             .then()
@@ -66,7 +64,7 @@ public class ProxyResourceTest {
 
     @Test
     public void testSqlExecuteError() {
-        when(databricksClient.executeSql(anyString(), any()))
+        when(databricksClient.executeSql(any(), any()))
             .thenThrow(new RuntimeException("SQL Error"));
             
         given()

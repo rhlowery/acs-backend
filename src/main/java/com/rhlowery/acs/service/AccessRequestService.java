@@ -8,4 +8,5 @@ public interface AccessRequestService {
     List<AccessRequest> getAllRequests(String userId, List<String> groups, boolean isAdmin);
     void saveRequests(List<AccessRequest> requests, String userId, List<String> groups, boolean isAdmin);
     Optional<AccessRequest> getRequestById(String id);
+    void clear();
 }

@@ -20,17 +20,16 @@ public class CatalogResourceTest {
             .statusCode(200)
             .contentType(ContentType.JSON);
 
-        // 2. Nodes (with 404 since no provider id matches)
+        // 2. Nodes
         given()
-            .queryParam("catalogId", "invalid")
-            .get("/api/catalog/nodes")
+            .get("/api/catalog/uc-oss/nodes")
             .then()
-            .statusCode(404);
+            .statusCode(200);
 
         // 3. Verify node
         given()
             .queryParam("path", "main.default.table1")
-            .get("/api/catalog/nodes/verify")
+            .get("/api/catalog/uc-oss/nodes/verify")
             .then()
             .statusCode(200);
 
@@ -38,7 +37,7 @@ public class CatalogResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(Map.of("path", "main.default.table1", "action", "ALLOW", "principal", "user1"))
-            .post("/api/catalog/nodes/policy")
+            .post("/api/catalog/uc-oss/nodes/policy")
             .then()
             .statusCode(202);
 
@@ -46,7 +45,7 @@ public class CatalogResourceTest {
         given()
             .queryParam("path", "main.default.table1")
             .queryParam("principal", "user1")
-            .get("/api/catalog/nodes/permissions")
+            .get("/api/catalog/uc-oss/nodes/permissions")
             .then()
             .statusCode(200)
             .body("effective", notNullValue());

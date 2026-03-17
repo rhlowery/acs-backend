@@ -6,15 +6,16 @@ Feature: Audit and Approvals
     Given I am authenticated as "admin" with groups "admins"
 
   Scenario Outline: Manage access request lifecycle
-    Given there is a pending request for table "<table>"
+    Given there is a <initial_status> request for table "<table>"
     When I <action> the request for table "<table>"
     Then the request for table "<table>" should have status "<status>"
     And I <link_visibility> see HATEOAS links to approve it
 
     Examples:
-      | table          | action  | status   | link_visibility |
-      | secure_data    | approve | APPROVED | should not      |
-      | sensitive_data | reject  | REJECTED | should not      |
+      | table          | initial_status | action  | status   | link_visibility |
+      | secure_data    | pending        | approve | APPROVED | should not      |
+      | secure_data    | approved       | verify  | VERIFIED | should not      |
+      | sensitive_data | pending        | reject  | REJECTED | should not      |
 
   Scenario Outline: Log and verify audit entries
     When I post an audit entry for type "<type>"

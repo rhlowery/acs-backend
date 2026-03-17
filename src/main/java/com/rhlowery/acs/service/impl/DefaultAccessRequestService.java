@@ -9,6 +9,7 @@ import java.util.Optional;
 /**
  * A secondary implementation that could be used for integration tests or as a base for DB implementation.
  */
+
 public class DefaultAccessRequestService implements AccessRequestService {
     @Override
     public List<AccessRequest> getAllRequests(String userId, List<String> groups, boolean isAdmin) {
@@ -23,5 +24,9 @@ public class DefaultAccessRequestService implements AccessRequestService {
     @Override
     public Optional<AccessRequest> getRequestById(String id) {
         return Optional.empty();
+    }
+
+    @Override
+    public void clear() {
     }
 }

@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
 public class MockAuditService implements AuditService {
     private final List<AuditEntry> logs = new CopyOnWriteArrayList<>();
 
