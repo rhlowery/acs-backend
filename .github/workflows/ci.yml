@@ -1,0 +1,45 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main", "rhlowery/issue4" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build and Test
+      run: ./mvnw clean verify jacoco:check -Djacoco.haltOnFailure=false
+
+    - name: JaCoCo Report Summary
+      run: |
+        echo "## JaCoCo Coverage Report" >> $GITHUB_STEP_SUMMARY
+        # (This is just a placeholder, real summary would use a specialized action or parse the CSV)
+
+    - name: Upload JaCoCo report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-report
+        path: target/site/jacoco/
+
+    - name: Package Application
+      run: ./mvnw package -DskipTests
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: acs-backend-runner
+        path: target/quarkus-app/
