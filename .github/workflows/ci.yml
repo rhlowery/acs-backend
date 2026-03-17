@@ -21,12 +21,16 @@ jobs:
         cache: maven
 
     - name: Build and Test
-      run: ./mvnw clean verify jacoco:check -Djacoco.haltOnFailure=false
+      run: ./mvnw clean verify
 
     - name: JaCoCo Report Summary
       run: |
         echo "## JaCoCo Coverage Report" >> $GITHUB_STEP_SUMMARY
-        # (This is just a placeholder, real summary would use a specialized action or parse the CSV)
+        # Extract coverage from JaCoCo CSV if available
+        if [ -f target/site/jacoco/jacoco.csv ]; then
+          COVERAGE=$(awk -F, 'NR>1 {sum+=$4; sum2+=$5} END {print sum2/(sum+sum2)*100}' target/site/jacoco/jacoco.csv | cut -d. -f1)
+          echo "Line Coverage: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
+        fi
 
     - name: Upload JaCoCo report
       if: always()
