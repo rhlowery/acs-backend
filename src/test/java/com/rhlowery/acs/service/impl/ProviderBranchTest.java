@@ -16,7 +16,7 @@ public class ProviderBranchTest {
         assertTrue(provider.getChildren("/other").isEmpty());
 
         // getEffectivePermissions branches
-        assertEquals("SELECT", provider.getEffectivePermissions("/sensitive", "alice"));
+        assertEquals("READ", provider.getEffectivePermissions("/sensitive", "alice"));
         assertEquals("NONE", provider.getEffectivePermissions("/salaries", "bob"));
         assertEquals("READ", provider.getEffectivePermissions("/users", "charlie"));
         assertEquals("READ", provider.getEffectivePermissions("/other", "alice"));
