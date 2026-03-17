@@ -4,15 +4,93 @@ This page provides a high-level overview of the ACS Backend architecture using C
 
 ## System Context (C4)
 
-The following diagram illustrates how the ACS Backend interacts with users and external systems.
+The following diagram illustrates how the ACS Backend (BFF) orchestrates access requests across various identity and catalog providers.
 
-![System Context](images/context.png)
+```mermaid
+graph TD
+    subgraph "External Systems"
+        IDP["Identity Providers (Okta/AzureAD)"]
+        UC["Unity Catalog / Databricks"]
+        Glue["AWS Glue / Lake Formation"]
+        Other["Other Catalogs (Iceberg/Gravitino)"]
+        Lineage["OpenLineage Consumer"]
+        OTel["OTel Collector"]
+    end
+
+    subgraph "ACS Infrastructure"
+        UI["ACS Frontend (Web UI)"]
+        BFF["ACS Backend (BFF)"]
+    end
+
+    User["User (Consumer/Approver)"] -- "Interacts with" --> UI
+    UI -- "REST / JWT" --> BFF
+    BFF -- "Authenticates via" --> IDP
+    BFF -- "Syncs policies to" --> UC
+    BFF -- "Syncs policies to" --> Glue
+    BFF -- "Syncs policies to" --> Other
+    BFF -- "Emits traces to" --> OTel
+    BFF -- "Emits lineage to" --> Lineage
+```
 
 ## Domain Model (UML)
 
-The core domain entities and their relationships are shown below.
+The core domain entities managed by the ACS Backend for auditing, policy enforcement, and request lifecycle management.
 
-![Class Diagram](images/classes.png)
+```mermaid
+classDiagram
+    class User {
+        +String id
+        +String name
+        +String email
+        +String role
+        +List~String~ groups
+    }
+    class Group {
+        +String id
+        +String name
+        +String description
+    }
+    class AccessRequest {
+        +String id
+        +String requesterId
+        +String userId
+        +String principalType
+        +String catalogName
+        +String schemaName
+        +String tableName
+        +String resourceType
+        +List~String~ privileges
+        +String status
+        +Long createdAt
+        +Long updatedAt
+        +String justification
+        +String rejectionReason
+        +List~String~ approverGroups
+        +Map~String,Object~ metadata
+    }
+    class CatalogNode {
+        +String name
+        +NodeType type
+        +String path
+        +List~String~ approvers
+        +String owner
+    }
+    class NodeType {
+        <<enumeration>>
+        CATALOG
+        DATABASE
+        SCHEMA
+        TABLE
+        VOLUME
+        MODEL
+        COMPUTE
+    }
+
+    User "1" -- "*" AccessRequest : initiates/requests_for
+    Group "*" -- "*" User : member_of
+    AccessRequest "*" -- "1" CatalogNode : targets
+    CatalogNode "1" -- "1" NodeType : is_of_type
+```
 
 ## Generic Catalog Interface
 

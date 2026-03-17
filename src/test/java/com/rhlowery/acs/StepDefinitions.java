@@ -767,14 +767,50 @@ public class StepDefinitions {
         assertTrue(perms == null || perms.equals("NONE") || perms.equals("READ"), "No additional privileges should be applied");
     }
 
-    @When("he approves the pending request from {string} for {string}")
-    public void admin_approves(String requester, String fullPath) {
-        Response response = givenAuth().get("/api/storage/requests");
-        String id = response.then().extract().path("find { it.tableName == '" + fullPath.substring(fullPath.lastIndexOf('/')+1) + "' }.id");
-        
+    @When("I request the list of all users")
+    public void i_request_all_users() {
+        lastResponse = givenAuth().get("/api/users");
+    }
+
+    @Then("the response should contain user {string}")
+    public void response_should_contain_user(String user) {
+        lastResponse.then().statusCode(200).body("id", hasItem(user));
+    }
+
+    @When("I request the list of all available groups")
+    public void i_request_all_groups() {
+        lastResponse = givenAuth().get("/api/groups");
+    }
+
+    @Then("the response should contain group {string}")
+    public void response_should_contain_group(String group) {
+        lastResponse.then().statusCode(200).body("id", hasItem(group));
+    }
+
+    @Given("user {string} has groups:")
+    public void user_has_groups(String user, List<Map<String, String>> expectedGroups) {
+        List<String> groups = expectedGroups.stream().map(m -> m.get("group")).toList();
+        givenAuth().get("/api/users")
+            .then()
+            .statusCode(200)
+            .body("find { it.id == '" + user + "' }.groups", hasItems(groups.toArray()));
+    }
+
+    @When("I update groups for user {string} to:")
+    public void update_user_groups(String user, List<Map<String, String>> newGroups) {
+        List<String> groups = newGroups.stream().map(m -> m.get("group")).toList();
         lastResponse = givenAuth()
             .contentType(ContentType.JSON)
-            .post("/api/storage/requests/" + id + "/approve");
-        lastResponse.then().statusCode(200);
+            .body(groups)
+            .patch("/api/users/" + user + "/groups");
+    }
+
+    @Then("the user {string} should have the following groups:")
+    public void user_should_have_groups(String user, List<Map<String, String>> expectedGroups) {
+        List<String> groups = expectedGroups.stream().map(m -> m.get("group")).toList();
+        lastResponse.then()
+            .statusCode(200)
+            .body("id", equalTo(user))
+            .body("groups", hasItems(groups.toArray()));
     }
 }

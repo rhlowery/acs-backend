@@ -55,6 +55,7 @@ public abstract class AbstractMockProvider implements CatalogProvider {
         if (path.contains("finance")) return new CatalogNode("finance", NodeType.NAMESPACE, path, implClass, java.util.List.of("finance-approvers"), "finance_lead");
         if (path.contains("staged")) return new CatalogNode("data_uploads", NodeType.VOLUME, path, implClass, java.util.List.of("data-governors"), "admin");
         if (path.contains("model")) return new CatalogNode("risk-model", NodeType.MODEL, path, implClass, java.util.List.of("model-owners"), "admin");
+        if (path.contains("compute")) return new CatalogNode("cluster-01", NodeType.COMPUTE, path, implClass, java.util.List.of("platform-admins"), "admin");
         if (path.contains("default")) return new CatalogNode("default", NodeType.DATABASE, path, implClass, java.util.List.of("default-admins"), "admin");
         return new CatalogNode("node", NodeType.TABLE, path, implClass, java.util.List.of("admins"), "admin");
     }

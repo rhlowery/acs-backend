@@ -10,5 +10,6 @@ public enum NodeType {
     NAMESPACE,
     VIEW,
     VOLUME,
-    MODEL
+    MODEL,
+    COMPUTE
 }

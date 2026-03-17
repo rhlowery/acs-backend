@@ -21,6 +21,11 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.rhlowery.acs.service.IdentityProvider;
 
+/**
+ * REST Resource for user authentication and profile management.
+ * Handles login, logout, and token-based session management using JWT.
+ * Supports both local authentication and pluggable identity providers.
+ */
 @Path("/api/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Authentication", description = "Endpoints for user login, logout and profile")
