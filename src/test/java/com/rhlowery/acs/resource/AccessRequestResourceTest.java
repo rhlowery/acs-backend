@@ -85,6 +85,7 @@ public class AccessRequestResourceTest {
             .header("Authorization", "Bearer " + token)
             .cookie("bff_jwt", token)
             .contentType(ContentType.JSON)
+            .body(Map.of("reason", "Cleanup"))
             .post("/api/storage/requests/" + requestId + "/reject")
             .then()
             .statusCode(200);
@@ -143,6 +144,7 @@ public class AccessRequestResourceTest {
             .header("Authorization", "Bearer " + token)
             .cookie("bff_jwt", token)
             .contentType(ContentType.JSON)
+            .body(Map.of("reason", "Testing"))
             .post("/api/storage/requests/non-existent/reject")
             .then()
             .statusCode(404);

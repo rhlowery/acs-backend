@@ -22,6 +22,7 @@ Feature: Audit and Approvals
     Then the audit log should contain the entry
 
     Examples:
-      | type                     |
-      | ACCESS_REQUEST_SUBMITTED |
-      | ACCESS_REQUEST_APPROVED  |
+      | type                      |
+      | ACCESS_REQUEST_SUBMITTED  |
+      | ACCESS_REQUEST_APPROVED   |
+      | REJECTION_REASON_LOGGED    |

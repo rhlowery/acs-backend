@@ -10,15 +10,17 @@ Feature: Access Request Management
     And the response should contain HATEOAS links for approval and rejection
 
     Examples:
-      | user  | groups    | catalog | schema  | table | privileges |
-      | alice | consumers | main    | default | users | SELECT     |
-      | bob   | users     | prod    | data    | sales | READ       |
-      | carol | guest     | public  | info    | help  | USAGE      |
-      | daryl | polaris   | polaris | cat     | tab   | SELECT     |
-      | edgar | datahub   | datahub | db      | tbl   | READ       |
-      | frank | gravitino | grav    | ns      | obj   | USAGE      |
-      | grace | atlan     | atlan   | assets  | item  | SELECT     |
-      | henry | hive      | hive    | default | tests | READ       |
+      | user  | groups    | catalog | schema  | table | privileges     |
+      | alice | consumers | main    | default | users | SELECT         |
+      | bob   | users     | prod    | data    | sales | READ           |
+      | carol | guest     | public  | info    | help  | USAGE          |
+      | daryl | polaris   | polaris | cat     | tab   | SELECT         |
+      | edgar | datahub   | datahub | db      | tbl   | READ           |
+      | frank | gravitino | grav    | ns      | obj   | USAGE          |
+      | grace | atlan     | atlan   | assets  | item  | SELECT         |
+      | henry | hive      | hive    | default | tests | READ           |
+      | ian   | volumes   | main    | upload  | vol1  | READ_VOLUME    |
+      | jack  | ml        | main    | model   | mod1  | EXECUTE_MODEL  |
 
   Scenario Outline: Approvers visibility and retrieval
     Given I am authenticated as "<user>" with groups "<groups>"

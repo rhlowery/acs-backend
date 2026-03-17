@@ -12,6 +12,11 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 
+/**
+ * REST Resource for dynamic catalog registration and management.
+ * Allows on-the-fly onboarding of new catalog instances by providing connection settings
+ * and metadata without requiring a service restart.
+ */
 @jakarta.enterprise.context.ApplicationScoped
 @Path("/api/catalog/registrations")
 @Produces(MediaType.APPLICATION_JSON)

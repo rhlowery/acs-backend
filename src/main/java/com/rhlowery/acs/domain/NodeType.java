@@ -9,5 +9,7 @@ public enum NodeType {
     TABLE,
     NAMESPACE,
     VIEW,
-    VOLUME
+    VOLUME,
+    MODEL,
+    COMPUTE
 }
