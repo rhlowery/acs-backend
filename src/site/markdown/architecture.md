@@ -24,12 +24,13 @@ graph TD
 
     User["User (Consumer/Approver)"] -- "Interacts with" --> UI
     UI -- "REST / JWT" --> BFF
-    BFF -- "Authenticates via" --> IDP
+    BFF -- "Sign tokens as" --> IDP
     BFF -- "Syncs policies to" --> UC
     BFF -- "Syncs policies to" --> Glue
     BFF -- "Syncs policies to" --> Other
     BFF -- "Emits traces to" --> OTel
     BFF -- "Emits lineage to" --> Lineage
+    BFF -- "Discovers metadata from" --> Metastores["Various Metastores (Unity, Polaris, etc.)"]
 ```
 
 ## Domain Model (UML)
@@ -68,12 +69,19 @@ classDiagram
         +List~String~ approverGroups
         +Map~String,Object~ metadata
     }
+    class Persona {
+        +String id
+        +String name
+        +String description
+    }
     class CatalogNode {
         +String name
         +NodeType type
         +String path
         +List~String~ approvers
         +String owner
+        +String comment
+        +String permissions
     }
     class NodeType {
         <<enumeration>>
@@ -84,12 +92,15 @@ classDiagram
         VOLUME
         MODEL
         COMPUTE
+        NAMESPACE
     }
 
     User "1" -- "*" AccessRequest : initiates/requests_for
     Group "*" -- "*" User : member_of
     AccessRequest "*" -- "1" CatalogNode : targets
     CatalogNode "1" -- "1" NodeType : is_of_type
+    User "*" -- "1" Persona : assigned_persona
+    Group "*" -- "1" Persona : assigned_persona
 ```
 
 ## Generic Catalog Interface
@@ -113,12 +124,12 @@ Available implementations include:
 *   **AtlanNodeProvider**
 *   **HiveMetastoreNodeProvider**
 
-## Dynamic Catalog Registration
+## Metastore Discovery
 
-In addition to static provider discovery via ServiceLoader, the system supports dynamic registration of catalog connections through the `/api/catalog/registrations` API. This allows for:
-*   **On-the-fly onboarding**: Registering new catalog instances without restarting the service.
-*   **Dynamic Settings**: Managing connection parameters (hosts, ports, credentials) for individual catalog registrations.
-*   **Lifecycle Management**: Full CRUD operations for catalog connections.
+The system provides an enhanced metadata discovery API (`/api/metastores/`) tailored for deep catalog exploration. Key features include:
+*   **Recursive Fetching**: Support for a `depth` parameter to fetch children multiple levels deep in a single request.
+*   **Fully-Qualified Paths**: All results are returned as a flat list of paths with associated metadata.
+*   **Pagination**: Built-in support for paginating large nodes using `page_token` and `next_page_token`.
 
 ## Technical Stack
 

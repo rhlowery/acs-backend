@@ -19,5 +19,7 @@ public record CatalogNode(
     String path,
     String implementation,
     java.util.List<String> approvers,
-    String owner
+    String owner,
+    String comment,
+    String permissions
 ) {}
