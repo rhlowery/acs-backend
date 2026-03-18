@@ -40,4 +40,21 @@ public interface UserService {
      * @return The updated user.
      */
     User updateUserGroups(String userId, List<String> groups);
+
+    /**
+     * Updates the system-wide persona for a user.
+     * @param userId The unique identifier of the user.
+     * @param persona The persona ID to assign.
+     * @return The updated user.
+     */
+    User updateUserPersona(String userId, String persona);
+
+    /**
+     * Updates the system-wide persona for a group.
+     * @param groupId The unique identifier of the group.
+     * @param persona The persona ID to assign.
+     * @return The updated group.
+     */
+    Group updateGroupPersona(String groupId, String persona);
+    void clear();
 }

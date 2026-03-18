@@ -16,17 +16,21 @@ public class MockUserService implements UserService {
     private final Map<String, Group> groups = new ConcurrentHashMap<>();
 
     public MockUserService() {
+        init();
+    }
+
+    private void init() {
         // Initialize mock groups
-        addGroup(new Group("admins", "Administrator Group", "Users with full administrative privileges"));
-        addGroup(new Group("data-governors", "Data Governance Group", "Users responsible for data quality and access approval"));
-        addGroup(new Group("finance-leads", "Finance Leads Group", "Users managing financial data access"));
-        addGroup(new Group("standard-users", "Standard User Group", "Default user group"));
-        addGroup(new Group("governance-team", "Mandatory Governance Group", "The final signature required for all access"));
+        addGroup(new Group("admins", "Administrator Group", "Users with full administrative privileges", null));
+        addGroup(new Group("data-governors", "Data Governance Group", "Users responsible for data quality and access approval", null));
+        addGroup(new Group("finance-leads", "Finance Leads Group", "Users managing financial data access", null));
+        addGroup(new Group("standard-users", "Standard User Group", "Default user group", null));
+        addGroup(new Group("governance-team", "Mandatory Governance Group", "The final signature required for all access", null));
 
         // Initialize mock users
-        addUser(new User("alice", "Alice Smith", "alice@example.com", "STANDARD_USER", new ArrayList<>(List.of("standard-users"))));
-        addUser(new User("bob", "Bob Jones", "bob@example.com", "ADMIN", new ArrayList<>(List.of("admins", "data-governors", "finance-leads", "governance-team"))));
-        addUser(new User("charlie", "Charlie Brown", "charlie@example.com", "STANDARD_USER", new ArrayList<>(List.of("standard-users"))));
+        addUser(new User("alice", "Alice Smith", "alice@example.com", "STANDARD_USER", new ArrayList<>(List.of("standard-users")), null));
+        addUser(new User("bob", "Bob Jones", "bob@example.com", "ADMIN", new ArrayList<>(List.of("admins", "data-governors", "finance-leads", "governance-team")), null));
+        addUser(new User("charlie", "Charlie Brown", "charlie@example.com", "STANDARD_USER", new ArrayList<>(List.of("standard-users")), null));
     }
 
     private void addUser(User user) {
@@ -63,8 +67,37 @@ public class MockUserService implements UserService {
         if (user == null) {
             throw new IllegalArgumentException("User not found: " + userId);
         }
-        User updatedUser = new User(user.id(), user.name(), user.email(), user.role(), new ArrayList<>(groupsToUpdate));
+        User updatedUser = new User(user.id(), user.name(), user.email(), user.role(), new ArrayList<>(groupsToUpdate), user.persona());
         users.put(userId, updatedUser);
         return updatedUser;
+    }
+
+    @Override
+    public User updateUserPersona(String userId, String persona) {
+        User user = users.get(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+        User updatedUser = new User(user.id(), user.name(), user.email(), user.role(), user.groups(), persona);
+        users.put(userId, updatedUser);
+        return updatedUser;
+    }
+
+    @Override
+    public Group updateGroupPersona(String groupId, String persona) {
+        Group group = groups.get(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Group not found: " + groupId);
+        }
+        Group updatedGroup = new Group(group.id(), group.name(), group.description(), persona);
+        groups.put(groupId, updatedGroup);
+        return updatedGroup;
+    }
+
+    @Override
+    public void clear() {
+        users.clear();
+        groups.clear();
+        init();
     }
 }

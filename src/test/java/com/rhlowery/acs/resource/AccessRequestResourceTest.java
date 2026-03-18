@@ -160,6 +160,63 @@ public class AccessRequestResourceTest {
             .statusCode(400); // Now returns 400
 
         // 5. Unauthenticated calls
-        given().get("/api/storage/requests").then().statusCode(200); // Default to anonymous
+        given().get("/api/storage/requests").then().statusCode(200); 
+    }
+
+    @Test
+    public void testApproverPersona() {
+        // 1. Assign persona via API (Requires admin login first)
+        String adminToken = given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("userId", "bob", "role", "ADMIN", "groups", List.of("admins")))
+            .post("/api/auth/login")
+            .then()
+            .statusCode(200)
+            .extract().cookie("bff_jwt");
+
+        given()
+            .header("Authorization", "Bearer " + adminToken)
+            .cookie("bff_jwt", adminToken)
+            .contentType(ContentType.TEXT)
+            .body("APPROVER")
+            .put("/api/auth/users/alice/persona")
+            .then()
+            .statusCode(200);
+
+        // 2. Login as alice (now an APPROVER)
+        String token = given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("userId", "alice", "role", "STANDARD_USER", "groups", List.of("standard-users")))
+            .post("/api/auth/login")
+            .then()
+            .statusCode(200)
+            .extract().cookie("bff_jwt");
+
+        // 3. Submit a request
+        String requestId = UUID.randomUUID().toString();
+        given()
+            .header("Authorization", "Bearer " + token)
+            .cookie("bff_jwt", token)
+            .contentType(ContentType.JSON)
+            .body(List.of(Map.of(
+                "id", requestId,
+                "catalogName", "test_catalog",
+                "schemaName", "test_schema",
+                "tableName", "test_table",
+                "privileges", List.of("SELECT"),
+                "justification", "Approver test"
+            )))
+            .post("/api/storage/requests")
+            .then()
+            .statusCode(200);
+
+        // 4. Approve it
+        given()
+            .header("Authorization", "Bearer " + token)
+            .cookie("bff_jwt", token)
+            .contentType(ContentType.JSON)
+            .post("/api/storage/requests/" + requestId + "/approve")
+            .then()
+            .statusCode(200);
     }
 }

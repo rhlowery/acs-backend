@@ -20,6 +20,9 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.rhlowery.acs.service.IdentityProvider;
+import com.rhlowery.acs.service.UserService;
+import com.rhlowery.acs.domain.Persona;
+import com.rhlowery.acs.domain.User;
 
 /**
  * REST Resource for user authentication and profile management.
@@ -32,6 +35,9 @@ import com.rhlowery.acs.service.IdentityProvider;
 public class AuthResource {
 
     private static final Logger LOG = Logger.getLogger(AuthResource.class);
+
+    @Inject
+    UserService userService;
 
     @Inject
     jakarta.enterprise.inject.Instance<IdentityProvider> providersInstance;
@@ -84,17 +90,42 @@ public class AuthResource {
 
                 userId = (String) authResult.get().get("userId");
                 groups = provider.getGroups(userId);
-                role = groups.contains("admins") ? "ADMIN" : "STANDARD_USER";
+                // The role will be determined later based on persona and groups
             }
 
-            String token = Jwt.issuer("unity-catalog-acs-bff")
+            // Check for locally assigned persona (User or Group)
+            Optional<User> localUser = userService.getUser(userId);
+            String persona = localUser.isPresent() ? localUser.get().persona() : null;
+            
+        if (persona == null && groups != null) {
+            for (String groupId : groups) {
+                Optional<com.rhlowery.acs.domain.Group> g = userService.getGroup(groupId);
+                if (g.isPresent() && g.get().persona() != null) {
+                    persona = g.get().persona();
+                    break;
+                }
+            }
+        }
+
+        // Persona takes precedence for capability, but role should still reflect access level
+        role = (groups != null && groups.contains("admins")) ? "ADMIN" : "STANDARD_USER";
+        if ("ADMIN".equals(persona) || "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona)) {
+            role = "ADMIN";
+        }
+
+        io.smallrye.jwt.build.JwtClaimsBuilder tokenBuilder = Jwt.issuer("unity-catalog-acs-bff")
                 .upn(userId)
                 .subject(userId)
                 .groups(new HashSet<>(groups))
                 .claim("userId", userId)
                 .claim("userName", userName)
-                .claim("role", role)
-                .sign();
+                .claim("role", role);
+            
+            if (persona != null) {
+                tokenBuilder.claim("persona", persona);
+            }
+            
+            String token = tokenBuilder.sign();
 
             NewCookie cookie = new NewCookie.Builder("bff_jwt")
                 .value(token)
@@ -104,8 +135,8 @@ public class AuthResource {
                 .maxAge(3600)
                 .build();
 
-            LOG.info("Login successful for " + userId + (providerId != null ? " via " + providerId : "") + ". Token first chars: " + token.substring(0, Math.min(token.length(), 10)));
-            return Response.ok(Map.of("status", "success", "userId", userId, "role", role, "providerId", providerId != null ? providerId : "local"))
+            LOG.info("Login successful for " + userId + (providerId != null ? " via " + providerId : "") + ". Persona: " + persona + ". Token first chars: " + token.substring(0, Math.min(token.length(), 10)));
+            return Response.ok(Map.of("status", "success", "userId", userId, "role", role, "persona", persona != null ? persona : "NONE", "providerId", providerId != null ? providerId : "local"))
                 .cookie(cookie)
                 .build();
         } catch (Exception e) {
@@ -138,10 +169,25 @@ public class AuthResource {
             LOG.warn("No principal found in /me");
             return Response.status(401).entity(Map.of("error", "Not authenticated")).build();
         }
+        String userId = securityContext.getUserPrincipal().getName();
+        Optional<User> localUser = userService.getUser(userId);
+        
+        String persona = localUser.isPresent() ? localUser.get().persona() : null;
+        if (persona == null && jwt.getGroups() != null) {
+            for (String groupId : jwt.getGroups()) {
+                Optional<com.rhlowery.acs.domain.Group> g = userService.getGroup(groupId);
+                if (g.isPresent() && g.get().persona() != null) {
+                    persona = g.get().persona();
+                    break;
+                }
+            }
+        }
+
         return Response.ok(Map.of(
             "authenticated", true, 
-            "userId", securityContext.getUserPrincipal().getName(),
-            "groups", jwt.getGroups() != null ? jwt.getGroups() : List.of()
+            "userId", userId,
+            "groups", jwt.getGroups() != null ? jwt.getGroups() : List.of(),
+            "persona", persona != null ? persona : "NONE"
         )).build();
     }
 
@@ -157,5 +203,37 @@ public class AuthResource {
             ))
             .collect(Collectors.toList());
         return Response.ok(providerList).build();
+    }
+    @GET
+    @Path("/personas")
+    @Operation(summary = "List available personas", description = "Returns a list of all available system-wide personas")
+    public Response listAvailablePersonas() {
+        return Response.ok(Persona.all()).build();
+    }
+
+    @PUT
+    @Path("/users/{userId}/persona")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Assign persona to user", description = "Explicitly assigns a persona to a specific user")
+    public Response assignPersonaToUser(@PathParam("userId") String userId, String persona) {
+        try {
+            User updated = userService.updateUserPersona(userId, persona);
+            return Response.ok(updated).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(404).entity(Map.of("error", e.getMessage())).build();
+        }
+    }
+
+    @PUT
+    @Path("/groups/{groupId}/persona")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Assign persona to group", description = "Explicitly assigns a persona to a specific group")
+    public Response assignPersonaToGroup(@PathParam("groupId") String groupId, String persona) {
+        try {
+            com.rhlowery.acs.domain.Group updated = userService.updateGroupPersona(groupId, persona);
+            return Response.ok(updated).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(404).entity(Map.of("error", e.getMessage())).build();
+        }
     }
 }

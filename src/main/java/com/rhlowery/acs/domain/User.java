@@ -11,6 +11,7 @@ import java.util.List;
  * @param email Email address
  * @param role The user's primary role (e.g., ADMIN, STANDARD_USER)
  * @param groups List of group IDs the user belongs to
+ * @param persona System-wide persona (Optional)
  */
 @RegisterForReflection
 public record User(
@@ -18,5 +19,6 @@ public record User(
     String name,
     String email,
     String role, // ADMIN, STANDARD_USER
-    List<String> groups
+    List<String> groups,
+    String persona
 ) {}

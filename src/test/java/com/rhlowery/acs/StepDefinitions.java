@@ -26,12 +26,16 @@ public class StepDefinitions {
     @Inject
     com.rhlowery.acs.service.CatalogService catalogService;
 
+    @Inject
+    com.rhlowery.acs.service.UserService userService;
+
     private String lastCheckedTable;
 
     @io.cucumber.java.Before
     public void setup() {
         if (accessRequestService != null) accessRequestService.clear();
         if (catalogService != null) catalogService.clear();
+        if (userService != null) userService.clear();
     }
 
     @Given("I am authenticated as {string} with groups {string}")
@@ -521,11 +525,21 @@ public class StepDefinitions {
     public void user_is_logged_in(String user) {
         String groups = "users";
         if ("alice".equals(user)) groups = "data-users";
-        if ("bob".equals(user)) groups = "finance-approvers";
+        if ("bob".equals(user)) groups = "finance-approvers,admins";
         if ("charlie".equals(user)) groups = "sensitive-approvers";
         if ("admin".equals(user)) groups = "admins";
         
         i_am_authenticated_as_with_groups(user, groups);
+    }
+
+    @Given("the ACS Backend is initialized with mock data")
+    public void backend_initialized() {
+        // Nothing special to do here as services are injected and cleared in @Before
+    }
+
+    @Given("an admin user {string} is logged in")
+    public void admin_user_logged_in(String user) {
+        user_is_logged_in(user);
     }
 
     @When("she requests {string} on {string} for Service Principal {string}")
@@ -812,5 +826,134 @@ public class StepDefinitions {
             .statusCode(200)
             .body("id", equalTo(user))
             .body("groups", hasItems(groups.toArray()));
+    }
+
+    @When("I request the list of available personas via {string}")
+    public void i_request_personas_via(String path) {
+        String url = path;
+        if (path.startsWith("GET ")) url = path.substring(4);
+        lastResponse = givenAuth().get(url);
+    }
+
+    @Then("the response should contain the following personas:")
+    public void response_should_contain_personas(List<Map<String, String>> expected) {
+        for (Map<String, String> p : expected) {
+            lastResponse.then().body("id", hasItem(p.get("id")))
+                        .body("name", hasItem(p.get("name")));
+        }
+    }
+
+    @Given("a user {string} exists in the system")
+    public void user_exists_in_system(String user) {
+        assertTrue(userService.getUser(user).isPresent(), "User " + user + " should exist in mock data");
+    }
+
+    @Given("a group {string} exists in the system")
+    public void group_exists_in_system(String group) {
+        assertTrue(userService.getGroup(group).isPresent(), "Group " + group + " should exist in mock data");
+    }
+
+    @When("I assign the persona {string} to group {string} via {string}")
+    public void assign_persona_to_group(String persona, String group, String path) {
+        String url = path;
+        if (path.startsWith("PUT ")) url = path.substring(4);
+        lastResponse = givenAuth()
+            .contentType(ContentType.TEXT)
+            .body(persona)
+            .put(url);
+    }
+
+    @Then("user {string} in group {string} should have the persona {string} after login")
+    public void user_in_group_should_have_persona_after_login(String user, String group, String persona) {
+        i_am_authenticated_as_with_groups(user, group);
+        lastResponse = givenAuth().get("/api/auth/me");
+        lastResponse.then().statusCode(200)
+            .body("persona", equalTo(persona));
+    }
+
+    @When("{string} rejects the access request {string} with reason {string}")
+    public void user_rejects_request_with_reason(String user, String id, String reason) {
+        String originalToken = currentToken;
+        user_is_logged_in(user);
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .body(Map.of("reason", reason))
+            .post("/api/storage/requests/" + id + "/reject");
+        currentToken = originalToken;
+    }
+
+    @When("I assign the persona {string} to user {string} via {string}")
+    public void assign_persona_to_user(String persona, String user, String path) {
+        String url = path;
+        if (path.startsWith("PUT ")) url = path.substring(4);
+        lastResponse = givenAuth()
+            .contentType(ContentType.TEXT)
+            .body(persona)
+            .put(url);
+    }
+
+    @Then("the access request {string} should have status {string}")
+    public void access_request_should_have_status(String id, String status) {
+        lastResponse = givenAuth().get("/api/storage/requests/" + id);
+        lastResponse.then().statusCode(200)
+            .body("status", equalTo(status));
+    }
+
+    @Then("the user {string} should have the persona {string} in their profile")
+    public void user_should_have_persona_in_profile(String user, String persona) {
+        lastResponse = givenAuth().get("/api/users/" + user);
+        lastResponse.then().statusCode(200)
+            .body("persona", equalTo(persona));
+    }
+
+    @Given("user {string} with IDP role {string} is assigned the persona {string}")
+    public void user_with_role_assigned_persona(String user, String role, String persona) {
+        // Authenticate to create the user in mock if needed, then update persona
+        i_am_authenticated_as_with_groups(user, "users");
+        userService.updateUserPersona(user, persona);
+    }
+
+    @Given("user {string} is assigned the persona {string}")
+    public void but_user_assigned_persona(String user, String persona) {
+        userService.updateUserPersona(user, persona);
+    }
+
+    @Given("a pending access request {string} exists for {string}")
+    public void pending_request_exists_for(String id, String user) {
+        // We'll use the table name from the ID for convenience in the generic step
+        this.lastCheckedTable = id; 
+        givenAuth()
+            .contentType(ContentType.JSON)
+            .body(List.of(Map.of(
+                "id", id,
+                "catalogName", "uc-oss",
+                "schemaName", "default",
+                "tableName", id,
+                "userId", user,
+                "privileges", List.of("SELECT"),
+                "justification", "Testing persona"
+            )))
+            .post("/api/storage/requests")
+            .then().statusCode(200);
+    }
+
+    @Given("user {string} is in the group {string}")
+    public void user_is_in_group(String user, String group) {
+        i_am_authenticated_as_with_groups(user, group);
+    }
+
+    @When("{string} approves the access request {string}")
+    public void user_approves_request(String user, String id) {
+        String originalToken = currentToken;
+        user_is_logged_in(user);
+        lastResponse = givenAuth()
+            .contentType(ContentType.JSON)
+            .post("/api/storage/requests/" + id + "/approve");
+        currentToken = originalToken;
+    }
+
+    @When("{string} attempts to approve the access request {string}")
+    public void user_attempts_to_approve(String user, String id) {
+        user_approves_request(user, id);
     }
 }
