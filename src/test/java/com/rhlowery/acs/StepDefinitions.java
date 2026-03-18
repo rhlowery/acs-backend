@@ -3,6 +3,7 @@ package com.rhlowery.acs;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -955,5 +956,60 @@ public class StepDefinitions {
     @When("{string} attempts to approve the access request {string}")
     public void user_attempts_to_approve(String user, String id) {
         user_approves_request(user, id);
+    }
+
+    @When("I request children for metastore {string} via {string}")
+    public void request_children_via_url(String sourceId, String url) {
+        String path = url;
+        if (url.startsWith("GET ")) path = url.substring(4);
+        lastResponse = givenAuth().get(path);
+    }
+
+    @Then("the response should contain a flat list of catalogs:")
+    public void response_contains_flat_list_of_catalogs(DataTable table) {
+        List<Map<String, String>> expected = table.asMaps();
+        for (Map<String, String> row : expected) {
+            lastResponse.then().body("nodes.path", hasItem(row.get("path")))
+                               .body("nodes.find { it.path == '" + row.get("path") + "' }.type", equalTo(row.get("type")));
+        }
+    }
+
+    @When("I request children for metastore {string} at path {string}")
+    public void request_children_at_path(String sourceId, String path) {
+        lastResponse = givenAuth()
+            .queryParam("path", path)
+            .get("/api/metastores/" + sourceId + "/children");
+    }
+
+    @Then("the response should contain only immediate children \\(Schemas):")
+    public void response_contains_only_immediate_children(DataTable table) {
+        response_contains_flat_list_of_catalogs(table);
+    }
+
+    @When("I request children for metastore {string} at path {string} with depth {int}")
+    public void request_children_at_path_with_depth(String sourceId, String path, int depth) {
+        lastResponse = givenAuth()
+            .queryParam("path", path)
+            .queryParam("depth", depth)
+            .get("/api/metastores/" + sourceId + "/children");
+    }
+
+    @Then("the response should contain catalogs and their children:")
+    public void response_contains_catalogs_and_children(DataTable table) {
+        response_contains_flat_list_of_catalogs(table);
+    }
+
+    @Then("a {string} should be present in the response")
+    public void field_should_be_present(String field) {
+        lastResponse.then().body("$", hasKey(field));
+    }
+
+    @Then("each node in the response should have metadata:")
+    public void each_node_has_metadata(DataTable table) {
+        List<Map<String, String>> rows = table.asMaps();
+        for (Map<String, String> row : rows) {
+            String field = row.get("field");
+            lastResponse.then().body("nodes", everyItem(hasKey(field)));
+        }
     }
 }

@@ -95,4 +95,30 @@ public class AuthResourceTest {
             .then()
             .statusCode(401);
     }
+    
+    @Test
+    public void testGetPersonas() {
+        given()
+            .get("/api/auth/personas")
+            .then()
+            .statusCode(200)
+            .body("id", hasItems("ADMIN", "APPROVER", "REQUESTER"));
+    }
+    
+    @Test
+    public void testGroupPersona() {
+        given()
+            .contentType(ContentType.TEXT)
+            .body("ADMIN")
+            .put("/api/auth/groups/admins/persona")
+            .then()
+            .statusCode(200);
+            
+        given()
+            .contentType(ContentType.TEXT)
+            .body("ADMIN")
+            .put("/api/auth/groups/non-existent/persona")
+            .then()
+            .statusCode(404);
+    }
 }

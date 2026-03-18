@@ -41,4 +41,14 @@ public class AuditResourceTest {
             .then()
             .statusCode(204);
     }
+
+    @Test
+    public void testAuditLogCleanup() {
+        given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("type", "TEST"))
+            .post("/api/audit/log")
+            .then()
+            .statusCode(200);
+    }
 }
