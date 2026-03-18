@@ -59,4 +59,14 @@ public class UserResource {
             return Response.status(500).entity(Map.of("error", e.getMessage())).build();
         }
     }
+
+    @GET
+    @Path("/users/{id}")
+    @Operation(summary = "Get user details", description = "Returns details for a specific user")
+    public Response getUser(@PathParam("id") String userId) {
+        return userService.getUser(userId)
+            .map(Response::ok)
+            .orElse(Response.status(404).entity(Map.of("error", "User not found")))
+            .build();
+    }
 }

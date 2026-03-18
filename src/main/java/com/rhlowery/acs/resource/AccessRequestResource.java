@@ -136,9 +136,10 @@ public class AccessRequestResource {
     public Response getRequests(@Context SecurityContext securityContext) {
         String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
-        boolean isAdmin = groups.contains("admins");
+        String persona = jwt.getClaim("persona");
+        boolean isAdmin = "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona) || "GOVERNANCE_ADMIN".equals(persona) || "ADMIN".equals(persona) || "APPROVER".equals(persona) || (groups != null && groups.contains("admins"));
         
-        LOG.infof("Listing requests for user: %s, isAdmin=%b", userId, isAdmin);
+        LOG.infof("Listing requests for user: %s, persona=%s, isAdmin=%b", userId, persona, isAdmin);
         List<HalAccessRequest> halRequests = accessRequestService.getAllRequests(userId, groups, isAdmin).stream()
             .map(HalAccessRequest::new)
             .collect(Collectors.toList());
@@ -165,7 +166,8 @@ public class AccessRequestResource {
         
         String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
-        boolean isAdmin = groups.contains("admins");
+        String persona = jwt.getClaim("persona");
+        boolean isAdmin = "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona) || "GOVERNANCE_ADMIN".equals(persona) || "ADMIN".equals(persona) || "APPROVER".equals(persona) || (groups != null && groups.contains("admins"));
 
         for (AccessRequest r : requests) {
             String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
@@ -215,7 +217,8 @@ public class AccessRequestResource {
     public Response approveRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
         String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
-        boolean isAdmin = groups.contains("admins");
+        String persona = jwt.getClaim("persona");
+        boolean isAdmin = "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona) || "GOVERNANCE_ADMIN".equals(persona) || "ADMIN".equals(persona) || "APPROVER".equals(persona) || groups.contains("admins");
 
         // Remove admin-only check to allow designated approvers to approve
 
@@ -228,7 +231,16 @@ public class AccessRequestResource {
                 List<String> userGroups = jwt.getGroups() != null ? new ArrayList<>(jwt.getGroups()) : Collections.emptyList();
                 boolean isDesignatedApprover = r.approverGroups() != null && r.approverGroups().stream().anyMatch(userGroups::contains);
                 
-                if (!isAdmin && !isDesignatedApprover) {
+                boolean isAuthorized;
+                if (persona != null) {
+                    // Persona takes precedence over IDP groups
+                    isAuthorized = isAdmin || "APPROVER".equals(persona) || "GOVERNANCE_ADMIN".equals(persona);
+                } else {
+                    // Fallback to groups
+                    isAuthorized = isAdmin || isDesignatedApprover;
+                }
+
+                if (!isAuthorized) {
                     return Response.status(403).entity(Map.of("error", "You are not an authorized approver for this request")).build();
                 }
 
@@ -245,7 +257,8 @@ public class AccessRequestResource {
                 }
                 meta.put("approvals", signs);
 
-                boolean fullyApproved = isAdmin || (r.approverGroups() == null || r.approverGroups().isEmpty() || signs.size() >= r.approverGroups().size());
+                boolean isSystemApprover = "APPROVER".equals(persona) || "GOVERNANCE_ADMIN".equals(persona);
+                boolean fullyApproved = isAdmin || isSystemApprover || (r.approverGroups() == null || r.approverGroups().isEmpty() || signs.size() >= r.approverGroups().size());
                 String newStatus = fullyApproved ? "APPROVED" : "PARTIALLY_APPROVED";
 
                 AccessRequest updated = new AccessRequest(
@@ -258,18 +271,18 @@ public class AccessRequestResource {
                     try {
                         String principal = r.userId() != null ? r.userId() : r.requesterId();
                         String path = "/" + r.catalogName() + "/" + r.schemaName() + "/" + r.tableName();
+                        
                         catalogService.applyPolicy(r.catalogName(), path, r.privileges().get(0), principal);
                     } catch (Exception e) {
-                        LOG.error("Failed to orchestrate policy", e);
+                        LOG.error("Failed to grant access on UC: " + e.getMessage(), e);
                     }
                 }
 
                 accessRequestService.saveRequests(List.of(updated), userId, groups, isAdmin);
-                lineageService.emitAccessRequestEvent(updated, userId);
-                broadcast("request-approved", updated);
+                broadcast("request-updated", List.of(updated));
                 return Response.ok(new HalAccessRequest(updated)).build();
             })
-            .orElse(Response.status(404).build());
+            .orElse(Response.status(404).entity(Map.of("error", "Request not found")).build());
     }
 
     public static class RejectionRequest {
@@ -282,7 +295,8 @@ public class AccessRequestResource {
     public Response rejectRequest(@PathParam("id") String id, RejectionRequest rejection, @Context SecurityContext securityContext) {
         String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
-        boolean isAdmin = groups.contains("admins");
+        String persona = jwt.getClaim("persona");
+        boolean isAdmin = "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona) || "GOVERNANCE_ADMIN".equals(persona) || "ADMIN".equals(persona) || "APPROVER".equals(persona) || groups.contains("admins");
 
         if (rejection == null || rejection.reason == null || rejection.reason.isBlank()) {
             return Response.status(400).entity(Map.of("error", "Rejection reason is mandatory")).build();
@@ -293,21 +307,30 @@ public class AccessRequestResource {
         return accessRequestService.getRequestById(id)
             .map(r -> {
                 boolean isDesignatedApprover = r.approverGroups() != null && r.approverGroups().stream().anyMatch(userGroups::contains);
-                if (!isAdmin && !isDesignatedApprover) {
+                
+                boolean isAuthorized;
+                if (persona != null) {
+                    // Persona takes precedence over IDP groups
+                    isAuthorized = isAdmin || "APPROVER".equals(persona) || "GOVERNANCE_ADMIN".equals(persona);
+                } else {
+                    // Fallback to groups
+                    isAuthorized = isAdmin || isDesignatedApprover;
+                }
+
+                if (!isAuthorized) {
                     return Response.status(403).entity(Map.of("error", "You are not an authorized approver for this request")).build();
                 }
 
-                AccessRequest rejected = new AccessRequest(
+                AccessRequest updated = new AccessRequest(
                     r.id(), r.requesterId(), r.userId(), r.principalType(), r.catalogName(), r.schemaName(), r.tableName(), 
                     r.resourceType(), r.privileges(), "REJECTED", r.createdAt(), System.currentTimeMillis(), 
                     r.justification(), rejection.reason, r.approverGroups(), r.metadata(), r.expirationTime()
                 );
-                accessRequestService.saveRequests(List.of(rejected), userId, groups, isAdmin);
-                lineageService.emitAccessRequestEvent(rejected, userId);
-                broadcast("request-rejected", rejected);
-                return Response.ok(new HalAccessRequest(rejected)).build();
+                accessRequestService.saveRequests(List.of(updated), userId, groups, isAdmin);
+                broadcast("request-updated", List.of(updated));
+                return Response.ok(updated).build();
             })
-            .orElse(Response.status(404).build());
+            .orElse(Response.status(404).entity(Map.of("error", "Request not found")).build());
     }
 
     @POST
@@ -316,7 +339,8 @@ public class AccessRequestResource {
     public Response verifyRequest(@PathParam("id") String id, @Context SecurityContext securityContext) {
         String userId = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
         List<String> groups = new ArrayList<>(jwt.getGroups() != null ? jwt.getGroups() : Collections.emptySet());
-        boolean isAdmin = groups.contains("admins");
+        String persona = jwt.getClaim("persona");
+        boolean isAdmin = "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona) || "GOVERNANCE_ADMIN".equals(persona) || "ADMIN".equals(persona) || "APPROVER".equals(persona) || (groups != null && groups.contains("admins"));
 
         return accessRequestService.getRequestById(id)
             .map(r -> {
