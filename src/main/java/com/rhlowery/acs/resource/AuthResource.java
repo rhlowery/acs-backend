@@ -70,6 +70,7 @@ public class AuthResource {
             String role = (String) body.getOrDefault("role", "STANDARD_USER");
             @SuppressWarnings("unchecked")
             List<String> groups = (List<String>) body.getOrDefault("groups", List.of());
+            String personaInBody = (String) body.get("persona");
 
             String providerId = (String) body.get("providerId");
             if (providerId != null) {
@@ -95,7 +96,7 @@ public class AuthResource {
 
             // Check for locally assigned persona (User or Group)
             Optional<User> localUser = userService.getUser(userId);
-            String persona = localUser.isPresent() ? localUser.get().persona() : null;
+            String persona = localUser.isPresent() ? localUser.get().persona() : personaInBody;
             
         if (persona == null && groups != null) {
             for (String groupId : groups) {

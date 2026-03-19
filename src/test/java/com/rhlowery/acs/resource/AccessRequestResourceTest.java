@@ -50,7 +50,7 @@ public class AccessRequestResourceTest {
             .then()
             .statusCode(200)
             .body("$.size()", greaterThanOrEqualTo(1))
-            .body("[0].tableName", notNullValue());
+            .body("find { it.id == '" + requestId + "' }.tableName", is("test_table"));
 
         // 4. Get request by ID
         given()

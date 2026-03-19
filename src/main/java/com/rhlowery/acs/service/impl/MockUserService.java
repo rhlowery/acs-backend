@@ -32,7 +32,7 @@ public class MockUserService implements UserService {
         addUser(new User("bob", "Bob Jones", "bob@example.com", "ADMIN", new ArrayList<>(List.of("admins", "data-governors", "finance-leads", "governance-team")), null));
         addUser(new User("charlie", "Charlie Brown", "charlie@example.com", "STANDARD_USER", new ArrayList<>(List.of("standard-users")), null));
         addUser(new User("david", "David Miller", "david@example.com", "STANDARD_USER", new ArrayList<>(List.of("standard-users")), null));
-        addUser(new User("eve", "Eve Davis", "eve@example.com", "STANDARD_USER", new ArrayList<>(List.of("sensitive-approvers")), null));
+        addUser(new User("eve", "Eve Davis", "eve@example.com", "STANDARD_USER", new ArrayList<>(List.of("sensitive-approvers")), "APPROVER"));
     }
 
     private void addUser(User user) {

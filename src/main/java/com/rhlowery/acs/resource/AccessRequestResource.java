@@ -234,7 +234,7 @@ public class AccessRequestResource {
                 boolean isAuthorized;
                 if (persona != null) {
                     // Persona takes precedence over IDP groups
-                    isAuthorized = isAdmin || "APPROVER".equals(persona) || "GOVERNANCE_ADMIN".equals(persona);
+                    isAuthorized = isAdmin || "APPROVER".equals(persona) || "GOVERNANCE_ADMIN".equals(persona) || isDesignatedApprover;
                 } else {
                     // Fallback to groups
                     isAuthorized = isAdmin || isDesignatedApprover;
@@ -311,7 +311,7 @@ public class AccessRequestResource {
                 boolean isAuthorized;
                 if (persona != null) {
                     // Persona takes precedence over IDP groups
-                    isAuthorized = isAdmin || "APPROVER".equals(persona) || "GOVERNANCE_ADMIN".equals(persona);
+                    isAuthorized = isAdmin || "APPROVER".equals(persona) || "GOVERNANCE_ADMIN".equals(persona) || isDesignatedApprover;
                 } else {
                     // Fallback to groups
                     isAuthorized = isAdmin || isDesignatedApprover;

@@ -6,4 +6,5 @@ import java.util.List;
 public interface AuditService {
     void log(AuditEntry entry);
     List<AuditEntry> getLogs();
+    io.smallrye.mutiny.Multi<AuditEntry> streamLogs();
 }
