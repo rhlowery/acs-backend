@@ -8,12 +8,16 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.ForbiddenException;
 import java.util.Map;
 import java.util.UUID;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.reactive.RestStreamElementType;
+import io.smallrye.mutiny.Multi;
 
 @Path("/api/audit")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,6 +29,9 @@ public class AuditResource {
 
     @Inject
     AuditService auditService;
+    
+    @Inject
+    JsonWebToken jwt;
 
     @POST
     @Path("/log")
@@ -62,5 +69,18 @@ public class AuditResource {
     public Response logUi(Map<String, Object> body) {
         LOG.infof("[UI-LOG] level=%s message=%s", body.get("level"), body.get("message"));
         return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/log/stream")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    @RestStreamElementType(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Stream audit logs", description = "Real-time SSE stream of audit events")
+    public Multi<AuditEntry> streamLogs() {
+        String persona = jwt.getClaim("persona");
+        if (!"AUDITOR".equals(persona) && !"REVIEWER".equals(persona) && !"ADMIN".equals(persona)) {
+            throw new ForbiddenException("Access denied: AUDITOR or REVIEWER persona required");
+        }
+        return auditService.streamLogs();
     }
 }

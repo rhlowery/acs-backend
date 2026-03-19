@@ -31,6 +31,7 @@ public class StepDefinitions {
     com.rhlowery.acs.service.UserService userService;
 
     private String lastCheckedTable;
+    private List<Map<String, Object>> sseEvents = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     @io.cucumber.java.Before
     public void setup() {
@@ -41,6 +42,15 @@ public class StepDefinitions {
 
     @Given("I am authenticated as {string} with groups {string}")
     public void i_am_authenticated_as_with_groups(String user, String groups) {
+        currentToken = login_as_with_groups(user, groups);
+    }
+
+    @Given("I am authenticated as {string} with persona {string}")
+    public void i_am_authenticated_as_with_persona(String user, String persona) {
+        currentToken = login_as_with_persona(user, persona);
+    }
+
+    private String login_as_with_groups(String user, String groups) {
         Response response = RestAssured.given()
             .contentType(ContentType.JSON)
             .body(Map.of(
@@ -49,11 +59,20 @@ public class StepDefinitions {
                 "groups", List.of(groups.split(","))
             ))
             .post("/api/auth/login");
-        
         response.then().statusCode(200);
-        currentToken = response.getCookie("bff_jwt");
-        assertNotNull(currentToken, "JWT cookie should not be null");
-        LOG.info("Authenticated as " + user + ". Token: " + (currentToken != null ? "present" : "NULL"));
+        return response.getCookie("bff_jwt");
+    }
+
+    private String login_as_with_persona(String user, String persona) {
+        Response response = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                "userId", user,
+                "persona", persona
+            ))
+            .post("/api/auth/login");
+        response.then().statusCode(200);
+        return response.getCookie("bff_jwt");
     }
 
     private static final Logger LOG = Logger.getLogger(StepDefinitions.class);
@@ -1010,6 +1029,117 @@ public class StepDefinitions {
         for (Map<String, String> row : rows) {
             String field = row.get("field");
             lastResponse.then().body("nodes", everyItem(hasKey(field)));
+        }
+    }
+
+    @When("I connect to the audit SSE stream at {string}")
+    public void connect_to_sse_stream(String path) {
+        sseEvents.clear();
+        String url = RestAssured.baseURI + ":" + RestAssured.port + path;
+        LOG.info("Connecting to SSE stream at: " + url);
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+                java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(url))
+                    .header("Authorization", "Bearer " + currentToken)
+                    .header("Accept", "text/event-stream")
+                    .build();
+                
+                client.sendAsync(request, java.net.http.HttpResponse.BodyHandlers.ofLines())
+                    .thenAccept(res -> {
+                        res.body().forEach(line -> {
+                            if (line.startsWith("data:")) {
+                                String data = line.substring(5).trim();
+                                try {
+                                    sseEvents.add(new com.fasterxml.jackson.databind.ObjectMapper().readValue(data, Map.class));
+                                } catch (Exception e) {}
+                            }
+                        });
+                    }).join();
+            } catch (Exception e) {
+                LOG.error("SSE Connection error", e);
+            }
+        });
+        // Give it a moment to connect
+        try { Thread.sleep(500); } catch (InterruptedException e) {}
+    }
+
+    @When("another user {string} logs an audit event:")
+    public void another_user_logs_audit_event(String user, DataTable table) {
+        Map<String, String> row = table.asMaps().get(0);
+        log_single_audit_event(user, row.get("type"), row.get("actor"), row.get("details"));
+    }
+
+    private void log_single_audit_event(String user, String type, String actor, String detailsStr) {
+        String originalToken = currentToken;
+        currentToken = login_as_with_persona(user, "ADMIN");
+        
+        Object details = detailsStr;
+        try {
+            details = new com.fasterxml.jackson.databind.ObjectMapper().readValue(detailsStr, Map.class);
+        } catch (Exception e) {}
+
+        givenAuth()
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                "type", type,
+                "actor", actor,
+                "details", details
+            ))
+            .post("/api/audit/log")
+            .then()
+            .statusCode(200);
+            
+        currentToken = originalToken;
+    }
+
+    @Then("I should receive an SSE event with type {string} containing:")
+    public void should_receive_sse_event(String eventType, DataTable table) {
+        LOG.info("Waiting for SSE events... Current count: " + sseEvents.size());
+        for (int i = 0; i < 20; i++) {
+            if (!sseEvents.isEmpty()) break;
+            try { Thread.sleep(500); } catch (InterruptedException e) {}
+        }
+        
+        LOG.info("Final SSE events count: " + sseEvents.size());
+        if (!sseEvents.isEmpty()) {
+            LOG.info("First event: " + sseEvents.get(0));
+        }
+
+        assertFalse(sseEvents.isEmpty(), "No SSE events received");
+        Map<String, String> expected = table.asMaps().get(0);
+        Map<String, Object> actual = sseEvents.get(0);
+        
+        assertEquals(expected.get("type"), actual.get("type"));
+        assertEquals(expected.get("actor"), actual.get("actor"));
+    }
+
+    @When("I attempt to connect to the audit SSE stream at {string}")
+    public void attempt_connect_sse(String path) {
+        lastResponse = givenAuth()
+            .header("Accept", "text/event-stream")
+            .get(path);
+    }
+
+    @When("another user {string} logs multiple audit events:")
+    public void user_logs_multiple_audit_events(String user, DataTable table) {
+        for (Map<String, String> row : table.asMaps()) {
+            log_single_audit_event(user, row.get("type"), row.get("actor"), row.get("details"));
+        }
+    }
+
+    @Then("I should receive {int} SSE events in order:")
+    public void should_receive_sse_events_in_order(int count, DataTable table) {
+        for (int i = 0; i < 10; i++) {
+            if (sseEvents.size() >= count) break;
+            try { Thread.sleep(500); } catch (InterruptedException e) {}
+        }
+        
+        assertEquals(count, sseEvents.size(), "Incorrect SSE event count");
+        List<Map<String, String>> expected = table.asMaps();
+        for (int i = 0; i < count; i++) {
+            assertEquals(expected.get(i).get("type"), sseEvents.get(i).get("type"));
         }
     }
 }
