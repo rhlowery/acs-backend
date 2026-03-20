@@ -8,7 +8,7 @@ replicaCount: 1
 # image configuration for the acs-backend container.
 image:
   # repository should point to your container registry (e.g. docker.io/myuser/acs-backend)
-  repository: acs-backend
+  repository: rhlowery/acs-backend
   # pullPolicy determines if the image is downloaded every time the pod starts.
   pullPolicy: IfNotPresent
   # tag overrides the image version. If left empty, it defaults to the AppVersion in Chart.yaml.
