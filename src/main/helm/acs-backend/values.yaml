@@ -2,15 +2,16 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+# replicaCount defines the number of persistent pod instances to run.
 replicaCount: 1
 
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+# image configuration for the acs-backend container.
 image:
+  # repository should point to your container registry (e.g. docker.io/myuser/acs-backend)
   repository: acs-backend
-  # This sets the pull policy for images.
+  # pullPolicy determines if the image is downloaded every time the pod starts.
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # tag overrides the image version. If left empty, it defaults to the AppVersion in Chart.yaml.
   tag: ""
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -49,11 +50,11 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+# service configuration for exposing the acs-backend within the cluster.
 service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  # type determines how the service is exposed (ClusterIP, NodePort, LoadBalancer).
   type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  # port is the port the service listens on. Set to 8080 to match the Quarkus default.
   port: 8080
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
@@ -123,7 +124,8 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+# livenessProbe and readinessProbe ensure the application is healthy and ready to receive traffic.
+# These use the /health endpoint provided by the Quarkus SmallRye Health extension.
 livenessProbe:
   httpGet:
     path: /health
@@ -160,12 +162,19 @@ tolerations: []
 
 affinity: {}
 
+# appConfig contains application-specific settings that override defaults in application.properties.
 appConfig:
+  # databricksUrl to point to your specific Databricks instance.
   databricksUrl: "https://databricks-instance.com"
+  # otelEndpoint for OpenTelemetry tracing. Should point to your OTel collector.
   otelEndpoint: "http://otel-collector:4317"
+  # environment name used for resource tagging and conditional logic.
   environment: "development"
 
+# security contains sensitive credentials and keys.
 security:
-  # Provide base64 encoded strings during helm install or in a CI/CD pipeline
+  # PEM files for JWT verification and signing.
+  # These must be provided as Base64 encoded strings.
+  # Example command to generate: cat privateKey.pem | base64
   publicKeyBase64: ""
   privateKeyBase64: ""
