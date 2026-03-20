@@ -12,6 +12,13 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <site>
+            <id>gh-pages</id>
+            <url>scm:git:git@github.com:rhlowery/acs-backend.git</url>
+        </site>
+    </distributionManagement>
+
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <maven.compiler.release>17</maven.compiler.release>
@@ -31,6 +38,7 @@
         <maven-pmd-plugin.version>3.21.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.8.3.1</spotbugs-maven-plugin.version>
         <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+        <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -311,6 +319,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-publish-plugin</artifactId>
+                <version>${maven-scm-publish-plugin.version}</version>
+                <configuration>
+                    <scmBranch>gh-pages</scmBranch>
+                    <pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
+                    <checkinComment>Deploying site to GitHub Pages for version ${project.version}</checkinComment>
+                    <content>${project.build.directory}/site</content>
+                </configuration>
             </plugin>
         </plugins>
     </build>
