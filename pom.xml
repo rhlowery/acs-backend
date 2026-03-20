@@ -275,6 +275,43 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>${spotbugs-maven-plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>helm-lint</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>helm</executable>
+                            <arguments>
+                                <argument>lint</argument>
+                                <argument>${project.basedir}/src/main/helm/acs-backend</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>helm-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>helm</executable>
+                            <arguments>
+                                <argument>package</argument>
+                                <argument>${project.basedir}/src/main/helm/acs-backend</argument>
+                                <argument>--destination</argument>
+                                <argument>${project.build.directory}/helm</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
