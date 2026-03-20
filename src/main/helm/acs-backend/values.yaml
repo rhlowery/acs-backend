@@ -8,11 +8,11 @@ replicaCount: 1
 # image configuration for the acs-backend container.
 image:
   # repository should point to your container registry (e.g. docker.io/myuser/acs-backend)
-  repository: rhlowery/acs-backend
+  repository: acs-backend
   # pullPolicy determines if the image is downloaded every time the pod starts.
   pullPolicy: IfNotPresent
   # tag overrides the image version. If left empty, it defaults to the AppVersion in Chart.yaml.
-  tag: ""
+  tag: "latest"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -84,18 +84,18 @@ httpRoute:
   annotations: {}
   # Which Gateways this Route is attached to.
   parentRefs:
-  - name: gateway
-    sectionName: http
-    # namespace: default
+    - name: gateway
+      sectionName: http
+      # namespace: default
   # Hostnames matching HTTP header.
   hostnames:
-  - chart-example.local
+    - chart-example.local
   # List of rules and filters applied.
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /headers
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /headers
   #   filters:
   #   - type: RequestHeaderModifier
   #     requestHeaderModifier:

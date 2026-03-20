@@ -40,10 +40,11 @@
         <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
         <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
         <quarkus.container-image.build>true</quarkus.container-image.build>
-        <quarkus.container-image.group>rhlowery</quarkus.container-image.group>
         <quarkus.container-image.name>acs-backend</quarkus.container-image.name>
+        <quarkus.container-image.group></quarkus.container-image.group>
         <quarkus.jib.docker-build>true</quarkus.jib.docker-build>
         <quarkus.jib.platforms>linux/amd64,linux/arm64</quarkus.jib.platforms>
+        <quarkus.container-image.additional-tags>latest</quarkus.container-image.additional-tags>
     </properties>
 
     <dependencyManagement>
