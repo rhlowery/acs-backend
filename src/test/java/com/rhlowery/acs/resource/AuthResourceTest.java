@@ -16,7 +16,7 @@ public class AuthResourceTest {
         // 1. Login with variety of data
         String token = given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "carol", "userName", "Carol User", "groups", List.of("guest")))
+            .body(Map.of("userId", "carol", "password", "password", "userName", "Carol User", "groups", List.of("guest")))
             .post("/api/auth/login")
             .then()
             .statusCode(200)
@@ -62,7 +62,7 @@ public class AuthResourceTest {
         // 2. Minimal data
         given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "minimal"))
+            .body(Map.of("userId", "minimal", "password", "password"))
             .post("/api/auth/login")
             .then()
             .statusCode(200);

@@ -41,7 +41,7 @@
         <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
         <quarkus.container-image.build>true</quarkus.container-image.build>
         <quarkus.container-image.name>acs-backend</quarkus.container-image.name>
-        <quarkus.container-image.group></quarkus.container-image.group>
+        <quarkus.container-image.group>rhlowery</quarkus.container-image.group>
         <quarkus.jib.docker-build>true</quarkus.jib.docker-build>
         <quarkus.jib.platforms>linux/amd64,linux/arm64</quarkus.jib.platforms>
         <quarkus.container-image.additional-tags>latest</quarkus.container-image.additional-tags>
@@ -136,8 +136,26 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-oidc-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-container-image-jib</artifactId>
         </dependency>
+
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>

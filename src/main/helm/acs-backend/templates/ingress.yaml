@@ -5,9 +5,14 @@ metadata:
   name: {{ include "acs-backend.fullname" . }}
   labels:
     {{- include "acs-backend.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- if or .Values.ingress.annotations .Values.ingress.certManager.enabled }}
   annotations:
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if .Values.ingress.certManager.enabled }}
+    cert-manager.io/{{ lower .Values.ingress.certManager.issuerRef.kind | default "cluster-issuer" }}: {{ .Values.ingress.certManager.issuerRef.name | quote }}
+    {{- end }}
   {{- end }}
 spec:
   {{- with .Values.ingress.className }}

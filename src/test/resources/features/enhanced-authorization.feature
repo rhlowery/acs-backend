@@ -10,7 +10,7 @@ Feature: Enhanced Authorization with Time-Bound Access and Multi-Approvers
   Scenario: Multi-signature approval from designated groups
     Given "alice" has a pending request for "/databricks/finance/quarters"
     And the request requires approval from "finance-approvers"
-    When "bob" who is in "finance-approvers" approves the request
+    When "ben" who is in "finance-approvers" approves the request
     Then the request status should be "PARTIALLY_APPROVED"
     When "admin" who is in "governance-team" approves the request
     Then the request status should be "APPROVED"
@@ -26,7 +26,7 @@ Feature: Enhanced Authorization with Time-Bound Access and Multi-Approvers
   Scenario: Mandatory Governance approval for multi-owner request
     Given "alice" has a pending request for "/databricks/finance/salaries" (Owner: finance-leads)
     And the request requires approval from "governance-team"
-    When "bob" who is in "finance-leads" approves the request
+    When "ben" who is in "finance-leads" approves the request
     Then the request status should be "PARTIALLY_APPROVED"
     And the request status should be "PARTIALLY_APPROVED"
 

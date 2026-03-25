@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -52,6 +53,12 @@ public class AuthResource {
     @Inject
     JsonWebToken jwt;
 
+    @ConfigProperty(name = "quarkus.oidc-client.auth-server-url")
+    Optional<String> authServerUrl;
+
+    @ConfigProperty(name = "quarkus.oidc-client.client-id")
+    Optional<String> clientId;
+
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -73,73 +80,91 @@ public class AuthResource {
             String personaInBody = (String) body.get("persona");
 
             String providerId = (String) body.get("providerId");
-            if (providerId != null) {
-                LOG.info("Login via provider: " + providerId);
+            final String finalProviderId = (providerId == null && isMockMode()) ? "mock" : providerId;
+
+            if (finalProviderId != null) {
+                LOG.info("Login via provider: " + finalProviderId);
                 IdentityProvider provider = providers.stream()
-                    .filter(p -> providerId.equals(p.getId()))
-                    .findFirst()
-                    .orElse(null);
-                
+                        .filter(p -> finalProviderId.equals(p.getId()))
+                        .findFirst()
+                        .orElse(null);
+
                 if (provider == null) {
-                    return Response.status(400).entity(Map.of("error", "Unknown provider: " + providerId)).build();
+                    return Response.status(400).entity(Map.of("error", "Unknown provider: " + finalProviderId)).build();
                 }
 
                 Optional<Map<String, Object>> authResult = provider.authenticate(body);
                 if (authResult.isEmpty()) {
-                    return Response.status(401).entity(Map.of("error", "Invalid credentials for " + providerId)).build();
+                    return Response.status(401).entity(Map.of("error", "Invalid credentials")).build();
                 }
 
                 userId = (String) authResult.get().get("userId");
+                userName = authResult.get().containsKey("userName") ? (String) authResult.get().get("userName")
+                        : userName;
                 groups = provider.getGroups(userId);
+                String authPersona = (String) authResult.get().get("persona");
+                if (authPersona != null && !authPersona.isBlank()) {
+                    personaInBody = authPersona;
+                }
                 // The role will be determined later based on persona and groups
             }
 
             // Check for locally assigned persona (User or Group)
             Optional<User> localUser = userService.getUser(userId);
-            String persona = localUser.isPresent() ? localUser.get().persona() : personaInBody;
-            
-        if (persona == null && groups != null) {
-            for (String groupId : groups) {
-                Optional<com.rhlowery.acs.domain.Group> g = userService.getGroup(groupId);
-                if (g.isPresent() && g.get().persona() != null) {
-                    persona = g.get().persona();
-                    break;
+            if (localUser.isEmpty()) {
+                // Just-in-time provisioning for all successful logins (IdP or Local)
+                User newUser = new User(userId, userName, userId + "@example.com", role, groups, null);
+                localUser = Optional.of(userService.saveUser(newUser));
+            }
+
+            String persona = localUser.isPresent() && localUser.get().persona() != null ? localUser.get().persona()
+                    : personaInBody;
+
+            if (persona == null && groups != null) {
+                for (String groupId : groups) {
+                    Optional<com.rhlowery.acs.domain.Group> g = userService.getGroup(groupId);
+                    if (g.isPresent() && g.get().persona() != null) {
+                        persona = g.get().persona();
+                        break;
+                    }
                 }
             }
-        }
 
-        // Persona takes precedence for capability, but role should still reflect access level
-        role = (groups != null && groups.contains("admins")) ? "ADMIN" : "STANDARD_USER";
-        if ("ADMIN".equals(persona) || "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona)) {
-            role = "ADMIN";
-        }
+            // Persona takes precedence for capability, but role should still reflect access
+            // level
+            role = (groups != null && groups.contains("admins")) ? "ADMIN" : "STANDARD_USER";
+            if ("ADMIN".equals(persona) || "SECURITY_ADMIN".equals(persona) || "PLATFORM_ADMIN".equals(persona)) {
+                role = "ADMIN";
+            }
 
-        io.smallrye.jwt.build.JwtClaimsBuilder tokenBuilder = Jwt.issuer("unity-catalog-acs-bff")
-                .upn(userId)
-                .subject(userId)
-                .groups(new HashSet<>(groups))
-                .claim("userId", userId)
-                .claim("userName", userName)
-                .claim("role", role);
-            
+            io.smallrye.jwt.build.JwtClaimsBuilder tokenBuilder = Jwt.issuer("unity-catalog-acs-bff")
+                    .upn(userId)
+                    .subject(userId)
+                    .groups(new HashSet<>(groups))
+                    .claim("userId", userId)
+                    .claim("userName", userName)
+                    .claim("role", role);
+
             if (persona != null) {
                 tokenBuilder.claim("persona", persona);
             }
-            
+
             String token = tokenBuilder.sign();
 
             NewCookie cookie = new NewCookie.Builder("bff_jwt")
-                .value(token)
-                .path("/")
-                .httpOnly(true)
-                .secure(false) 
-                .maxAge(3600)
-                .build();
+                    .value(token)
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(false)
+                    .maxAge(3600)
+                    .build();
 
-            LOG.info("Login successful for " + userId + (providerId != null ? " via " + providerId : "") + ". Persona: " + persona + ". Token first chars: " + token.substring(0, Math.min(token.length(), 10)));
-            return Response.ok(Map.of("status", "success", "userId", userId, "role", role, "persona", persona != null ? persona : "NONE", "providerId", providerId != null ? providerId : "local"))
-                .cookie(cookie)
-                .build();
+            LOG.info("Login successful for " + userId + (providerId != null ? " via " + providerId : "") + ". Persona: "
+                    + persona + ". Token first chars: " + token.substring(0, Math.min(token.length(), 10)));
+            return Response.ok(Map.of("status", "success", "userId", userId, "role", role, "persona",
+                    persona != null ? persona : "NONE", "providerId", finalProviderId != null ? finalProviderId : "local"))
+                    .cookie(cookie)
+                    .build();
         } catch (Exception e) {
             LOG.error("Error in login", e);
             return Response.status(500).entity(Map.of("error", e.getMessage())).build();
@@ -153,10 +178,10 @@ public class AuthResource {
     @APIResponse(responseCode = "200", description = "Logout successful")
     public Response logout() {
         NewCookie cookie = new NewCookie.Builder("bff_jwt")
-            .value("")
-            .path("/")
-            .maxAge(0)
-            .build();
+                .value("")
+                .path("/")
+                .maxAge(0)
+                .build();
         return Response.ok(Map.of("status", "logged out")).cookie(cookie).build();
     }
 
@@ -172,8 +197,12 @@ public class AuthResource {
         }
         String userId = securityContext.getUserPrincipal().getName();
         Optional<User> localUser = userService.getUser(userId);
+
+        String persona = jwt.getClaim("persona");
+        if (persona == null) {
+            persona = localUser.isPresent() ? localUser.get().persona() : null;
+        }
         
-        String persona = localUser.isPresent() ? localUser.get().persona() : null;
         if (persona == null && jwt.getGroups() != null) {
             for (String groupId : jwt.getGroups()) {
                 Optional<com.rhlowery.acs.domain.Group> g = userService.getGroup(groupId);
@@ -184,12 +213,15 @@ public class AuthResource {
             }
         }
 
+        if (persona == null || persona.isBlank()) {
+            persona = "NONE";
+        }
+
         return Response.ok(Map.of(
-            "authenticated", true, 
-            "userId", userId,
-            "groups", jwt.getGroups() != null ? jwt.getGroups() : List.of(),
-            "persona", persona != null ? persona : "NONE"
-        )).build();
+                "authenticated", true,
+                "userId", userId,
+                "groups", jwt.getGroups() != null ? jwt.getGroups() : List.of(),
+                "persona", persona)).build();
     }
 
     @GET
@@ -197,14 +229,41 @@ public class AuthResource {
     @Operation(summary = "List identity providers", description = "Returns a list of all supported 3rd-party identity providers")
     public Response listProviders() {
         List<Map<String, String>> providerList = providers.stream()
-            .map(p -> Map.of(
-                "id", p.getId(),
-                "name", p.getName(),
-                "type", p.getType()
-            ))
-            .collect(Collectors.toList());
+                .map(p -> Map.of(
+                        "id", p.getId(),
+                        "name", p.getName(),
+                        "type", p.getType()))
+                .collect(Collectors.toList());
         return Response.ok(providerList).build();
     }
+
+    @GET
+    @Path("/config")
+    @PermitAll
+    @Operation(summary = "Get Auth Configuration", description = "Returns public OIDC configuration for the frontend")
+    public Response getConfig() {
+        boolean mock = isMockMode();
+
+        if (mock) {
+            return Response.ok(java.util.Map.of(
+                    "authServerUrl", "mock",
+                    "clientId", "mock",
+                    "isMock", true,
+                    "discoveryEnabled", false)).build();
+        }
+
+        return Response.ok(java.util.Map.of(
+                "authServerUrl", authServerUrl.orElse(""),
+                "clientId", clientId.orElse(""),
+                "isMock", false,
+                "discoveryEnabled", true)).build();
+    }
+
+    private boolean isMockMode() {
+        String url = authServerUrl.orElse("").trim();
+        return url.isEmpty() || url.equals("mock") || url.equals("http://localhost:8081/realms/quarkus");
+    }
+
     @GET
     @Path("/personas")
     @Operation(summary = "List available personas", description = "Returns a list of all available system-wide personas")

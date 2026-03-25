@@ -1,6 +1,14 @@
 apiVersion: v2
 name: acs-backend
-description: A Helm chart for the ACS Backend application
+description: Access Control Service Backend
+keywords:
+  - acs
+  - security
+  - identity
+  - authorization
+annotations:
+  dev.rhlowery.acs/component: backend
+  dev.rhlowery.acs/required-infra: postgresql, oidc
 
 # A chart can be either an 'application' or a 'library' chart.
 #

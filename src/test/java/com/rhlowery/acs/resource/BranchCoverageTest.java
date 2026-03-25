@@ -93,7 +93,7 @@ public class BranchCoverageTest {
         // 1. Authenticate
         String token = given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "admin", "role", "ADMIN", "groups", java.util.List.of("admins")))
+            .body(Map.of("userId", "admin", "password", "admin", "role", "ADMIN", "groups", java.util.List.of("admins")))
             .post("/api/auth/login")
             .then()
             .statusCode(200)
