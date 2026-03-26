@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import io.quarkus.test.security.TestSecurity;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +49,6 @@ public class ExtraCoverageTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = "ADMIN")
     public void testRejectWithoutReason() {
         String id = UUID.randomUUID().toString();
         given()
@@ -112,7 +110,6 @@ public class ExtraCoverageTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"ADMIN", "AUDITOR"})
     public void testAuditBranches() {
         // Log an entry
         com.rhlowery.acs.domain.AuditEntry entry = new com.rhlowery.acs.domain.AuditEntry(null, "TEST", "A", null, 0L, 0L, Map.of(), null, null);

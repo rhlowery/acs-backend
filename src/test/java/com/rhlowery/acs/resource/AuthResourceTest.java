@@ -1,11 +1,11 @@
 package com.rhlowery.acs.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
-import io.quarkus.test.security.TestSecurity;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -98,9 +98,11 @@ public class AuthResourceTest {
     }
     
     @Test
-    @TestSecurity(user = "admin", roles = "ADMIN")
+    @TestSecurity(user = "admin", roles = {"ADMIN"})
     public void testGetPersonas() {
+        // Authenticated flow (can just use a dummy token for 401 checking or mock real auth)
         given()
+            .cookie("bff_jwt", "dummy_token")
             .get("/api/auth/personas")
             .then()
             .statusCode(200)
@@ -108,9 +110,11 @@ public class AuthResourceTest {
     }
     
     @Test
-    @TestSecurity(user = "admin", roles = "ADMIN")
+    @TestSecurity(user = "admin", roles = {"ADMIN"})
     public void testGroupPersona() {
+        // Since we are mocking RestAssured, we just provide a dummy bff_jwt
         given()
+            .cookie("bff_jwt", "dummy_token")
             .contentType(io.restassured.http.ContentType.TEXT)
             .body("ADMIN")
             .put("/api/auth/groups/admins/persona")
