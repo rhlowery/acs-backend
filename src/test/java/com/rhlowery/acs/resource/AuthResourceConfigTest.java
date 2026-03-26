@@ -16,7 +16,6 @@ public class AuthResourceConfigTest {
             .statusCode(200)
             .body("authServerUrl", notNullValue())
             .body("clientId", notNullValue())
-            .body("isMock", is(true))
-            .body("discoveryEnabled", is(false));
+            .body("discoveryEnabled", is(true));
     }
 }

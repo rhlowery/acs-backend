@@ -71,15 +71,19 @@ public class AuditResource {
         return Response.noContent().build();
     }
 
+    @Inject
+    io.quarkus.security.identity.SecurityIdentity securityIdentity;
+
     @GET
     @Path("/log/stream")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     @RestStreamElementType(MediaType.APPLICATION_JSON)
     @Operation(summary = "Stream audit logs", description = "Real-time SSE stream of audit events")
     public Multi<AuditEntry> streamLogs() {
-        String persona = jwt.getClaim("persona");
-        if (!"AUDITOR".equals(persona) && !"REVIEWER".equals(persona) && !"ADMIN".equals(persona)) {
-            throw new ForbiddenException("Access denied: AUDITOR or REVIEWER persona required");
+        if (!securityIdentity.hasRole("AUDITOR") && 
+            !securityIdentity.hasRole("REVIEWER") && 
+            !securityIdentity.hasRole("ADMIN")) {
+            throw new ForbiddenException("Access denied: AUDITOR, REVIEWER, or ADMIN persona required");
         }
         return auditService.streamLogs();
     }

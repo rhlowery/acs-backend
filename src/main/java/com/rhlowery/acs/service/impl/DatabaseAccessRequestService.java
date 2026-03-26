@@ -23,10 +23,11 @@ public class DatabaseAccessRequestService implements AccessRequestService {
             entities = AccessRequestEntity.listAll();
         } else {
             // For now, let's use a stream approach to handle collection-based filtering correctly
-            entities = AccessRequestEntity.<AccessRequestEntity>listAll().stream()
+            List<AccessRequestEntity> all = AccessRequestEntity.listAll();
+            entities = all.stream()
                 .filter(r -> r.requesterId.equals(userId) || 
-                             r.userId.equals(userId) || 
-                             (r.approverGroups != null && groups != null && r.approverGroups.stream().anyMatch(groups::contains)))
+                                 r.userId.equals(userId) || 
+                                 (r.approverGroups != null && groups != null && r.approverGroups.stream().anyMatch(groups::contains)))
                 .collect(Collectors.toList());
         }
 

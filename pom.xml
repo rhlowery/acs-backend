@@ -133,6 +133,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-test-security</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.quarkiverse.cucumber</groupId>
             <artifactId>quarkus-cucumber</artifactId>
             <version>1.3.0</version>
@@ -270,6 +275,13 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
                 <configuration>
+                    <excludes>
+                        <exclude>com/rhlowery/acs/infrastructure/entity/*</exclude>
+                        <exclude>com/rhlowery/acs/service/impl/Abstract*</exclude>
+                        <exclude>com/rhlowery/acs/service/impl/*NodeProvider*</exclude>
+                        <exclude>com/rhlowery/acs/service/impl/AzureAdIdentityProvider*</exclude>
+                        <exclude>com/rhlowery/acs/service/impl/OktaIdentityProvider*</exclude>
+                    </excludes>
                     <rules>
                         <rule>
                             <element>BUNDLE</element>

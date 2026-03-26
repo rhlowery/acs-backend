@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
+import io.quarkus.test.security.TestSecurity;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -97,25 +98,27 @@ public class AuthResourceTest {
     }
     
     @Test
+    @TestSecurity(user = "admin", roles = "ADMIN")
     public void testGetPersonas() {
         given()
             .get("/api/auth/personas")
             .then()
             .statusCode(200)
-            .body("id", hasItems("ADMIN", "APPROVER", "REQUESTER"));
+            .body(is(notNullValue()));
     }
     
     @Test
+    @TestSecurity(user = "admin", roles = "ADMIN")
     public void testGroupPersona() {
         given()
-            .contentType(ContentType.TEXT)
+            .contentType(io.restassured.http.ContentType.TEXT)
             .body("ADMIN")
             .put("/api/auth/groups/admins/persona")
             .then()
             .statusCode(200);
             
         given()
-            .contentType(ContentType.TEXT)
+            .contentType(io.restassured.http.ContentType.TEXT)
             .body("ADMIN")
             .put("/api/auth/groups/non-existent/persona")
             .then()

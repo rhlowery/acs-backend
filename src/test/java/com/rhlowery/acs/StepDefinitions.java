@@ -1169,7 +1169,7 @@ public class StepDefinitions {
     @Then("I should receive an SSE event with type {string} containing:")
     public void should_receive_sse_event(String eventType, DataTable table) {
         LOG.info("Waiting for SSE events... Current count: " + sseEvents.size());
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 40; i++) {
             if (!sseEvents.isEmpty()) break;
             try { Thread.sleep(500); } catch (InterruptedException e) {}
         }
