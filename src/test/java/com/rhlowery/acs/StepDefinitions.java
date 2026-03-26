@@ -472,6 +472,28 @@ public class StepDefinitions {
             .get("/api/storage/requests/" + id);
     }
 
+    @When("I login with userId {string} and password {string}")
+    public void i_login_with_userId_and_password(String userId, String password) {
+        lastResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("userId", userId, "password", password))
+            .post("/api/auth/login");
+        
+        if (lastResponse.getStatusCode() == 200) {
+            currentToken = lastResponse.getCookie("bff_jwt");
+        }
+    }
+
+    @Then("the JWT token should be returned in a cookie")
+    public void jwt_token_should_be_returned_in_a_cookie() {
+        assertNotNull(currentToken, "JWT token cookie 'bff_jwt' should be present in the response");
+    }
+
+    @Then("the response user should be {string}")
+    public void response_user_should_be(String expectedUser) {
+        lastResponse.then().body("userId", equalTo(expectedUser));
+    }
+
     @When("I try to login with no userId")
     public void i_try_to_login_with_no_user_id() {
         lastResponse = RestAssured.given()
