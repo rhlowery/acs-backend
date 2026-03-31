@@ -17,7 +17,7 @@ public class AccessRequestResourceTest {
         // 1. Login to get token
         String token = given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "admin", "role", "ADMIN", "groups", List.of("admins")))
+            .body(Map.of("userId", "admin", "password", "admin", "role", "ADMIN", "groups", List.of("admins")))
             .post("/api/auth/login")
             .then()
             .statusCode(200)
@@ -96,7 +96,7 @@ public class AccessRequestResourceTest {
         // 1. Login as standard user
         String token = given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "user1", "role", "STANDARD_USER", "groups", List.of("users")))
+            .body(Map.of("userId", "user1", "password", "password", "role", "STANDARD_USER", "groups", List.of("users")))
             .post("/api/auth/login")
             .then()
             .statusCode(200)
@@ -116,7 +116,7 @@ public class AccessRequestResourceTest {
     public void testErrorScenarios() {
         String token = given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "admin", "role", "ADMIN", "groups", List.of("admins")))
+            .body(Map.of("userId", "admin", "password", "admin", "role", "ADMIN", "groups", List.of("admins")))
             .post("/api/auth/login")
             .then()
             .statusCode(200)
@@ -168,7 +168,7 @@ public class AccessRequestResourceTest {
         // 1. Assign persona via API (Requires admin login first)
         String adminToken = given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "bob", "role", "ADMIN", "groups", List.of("admins")))
+            .body(Map.of("userId", "bob", "password", "password", "role", "ADMIN", "groups", List.of("admins")))
             .post("/api/auth/login")
             .then()
             .statusCode(200)
@@ -186,7 +186,7 @@ public class AccessRequestResourceTest {
         // 2. Login as alice (now an APPROVER)
         String token = given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", "alice", "role", "STANDARD_USER", "groups", List.of("standard-users")))
+            .body(Map.of("userId", "alice", "password", "password", "role", "STANDARD_USER", "groups", List.of("standard-users")))
             .post("/api/auth/login")
             .then()
             .statusCode(200)
@@ -343,7 +343,7 @@ public class AccessRequestResourceTest {
     private String loginAs(String user, String role, String groups) {
         return given()
             .contentType(ContentType.JSON)
-            .body(Map.of("userId", user, "role", role, "groups", List.of(groups.split(","))))
+            .body(Map.of("userId", user, "password", user.equals("admin") ? "admin" : "password", "role", role, "groups", java.util.Arrays.asList(groups.split(","))))
             .post("/api/auth/login")
             .then()
             .statusCode(200)

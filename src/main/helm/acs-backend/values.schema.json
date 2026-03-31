@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": { "type": "string" },
+        "tag": { "type": "string" }
+      },
+      "required": ["repository", "tag"]
+    },
+    "postgresql": {
+      "type": "object",
+      "properties": {
+        "host": { "type": "string" },
+        "database": { "type": "string" }
+      },
+      "required": ["host", "database"]
+    },
+    "oidc": {
+      "type": "object",
+      "properties": {
+        "authServerUrl": { "type": "string" },
+        "clientId": { "type": "string" }
+      },
+      "required": ["authServerUrl", "clientId"]
+    }
+  }
+}

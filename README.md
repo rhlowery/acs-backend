@@ -1,103 +1,123 @@
 # acs-backend
 
-This project provides the backend services for the Access Control System (ACS), including access request management, auditing, and a generic interface for various data catalogs.
+The Access Control Service (ACS) backend — a centralized security and governance middleware for managing access policies across heterogeneous data catalogs and identity providers.
 
 ## Features
 
-- **Generic Catalog Interface**: Traversal and policy overlay for Unity Catalog, AWS Glue, Iceberg, and more via a pluggable SPI.
-- **Access Request Workflow**: Automated submission and approval flow with lineage tracking.
-- **Observability**: Built-in support for OpenTelemetry and OpenLineage.
-- **Security**: JWT integration for secure API access.
+- **Dynamic OIDC Authentication**: Pluggable identity provider integration via OIDC discovery (Keycloak, Okta, Azure AD).
+- **Persona-Based RBAC**: Fine-grained authorization using personas (ADMIN, GOVERNANCE_ADMIN, APPROVER, REQUESTER, AUDITOR) with priority-based resolution (DB > Group > JWT).
+- **Generic Catalog Interface**: Traversal and policy overlay for Unity Catalog, Hive Metastore, AWS Glue, and more via a pluggable SPI.
+- **Access Request Workflow**: Automated submission, multi-level approval, and verification with lineage tracking.
+- **Audit & Governance**: Full audit trail with OpenLineage-compatible event emission.
+- **Observability**: Built-in support for OpenTelemetry tracing and Prometheus metrics.
+- **Security**: Backend-for-Frontend (BFF) JWT pattern with signed session cookies.
 
 ## Architecture
 
-Detailed architecture documentation, including C4 and UML diagrams, is available via the Maven site:
-```shell script
-./mvnw site
+Detailed C4 diagrams (Context, Container, Component), UML class diagrams, OIDC sequence flows, and persona resolution logic:
+
+📄 **[docs/architecture.md](docs/architecture.md)**
+
+OIDC transition analysis and effort estimation:
+
+📄 **[docs/oidc-transition-analysis.md](docs/oidc-transition-analysis.md)**
+
+## Quick Start
+
+### Prerequisites
+- Java 21+
+- Maven 3.9+ (or use the included `mvnw` wrapper)
+- PostgreSQL (or use H2 in dev/test mode)
+
+### Development Mode
+```shell
+./mvnw compile quarkus:dev
 ```
+> Dev UI available at http://localhost:8080/q/dev/
+> Swagger UI available at http://localhost:8080/q/swagger-ui/
 
-## Testing
-
-The project uses a TDD approach with Cucumber for BDD testing. To run the tests:
-```shell script
+### Running Tests
+```shell
 ./mvnw test
 ```
 
-## Running the application in dev mode
+Tests include:
+- **166 test cases** across 16 test classes
+- **Cucumber BDD** scenarios for end-to-end flows
+- **JaCoCo** code coverage with 80% line/branch threshold
 
-You can run your application in dev mode that enables live coding using:
+### Environment Variables
 
-```shell script
-./mvnw compile quarkus:dev
-```
+| Variable | Description | Default |
+|:---|:---|:---|
+| `OIDC_AUTH_SERVER_URL` | OIDC discovery endpoint | `http://localhost:8180/realms/acs` |
+| `OIDC_CLIENT_ID` | OIDC client identifier | `acs-backend` |
+| `OIDC_CLIENT_SECRET` | OIDC client secret | (required for production) |
+| `DB_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://localhost:5432/acs` |
+| `DB_USERNAME` | Database user | `acs` |
+| `DB_PASSWORD` | Database password | `acs` |
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+## Packaging
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
+```shell
 ./mvnw package
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+Produces `target/quarkus-app/quarkus-run.jar`. Run with:
+```shell
+java -jar target/quarkus-app/quarkus-run.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+### Docker Image
+```shell
+./mvnw package -Dquarkus.container-image.build=true
+```
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
+### Native Executable
+```shell
 ./mvnw package -Dnative
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+## Helm Deployment
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+The Helm chart is located at `src/main/helm/acs-backend/`.
+
+```shell
+helm install acs-backend src/main/helm/acs-backend/ \
+  --set oidc.authServerUrl=http://keycloak:8080/realms/acs \
+  --set postgresql.host=postgresql-rw \
+  --set postgresql.database=acs
 ```
 
-You can then execute your native executable with: `./target/acs-backend-1.0.0-SNAPSHOT-runner`
+Features:
+- Init containers for PostgreSQL readiness checks
+- OIDC configuration via ConfigMaps and Secrets
+- Optional PEM key mounting for JWT signing
+- HPA auto-scaling support
+- Ingress and Gateway API HTTPRoute support
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+## API Endpoints
+
+| Method | Path | Description |
+|:---|:---|:---|
+| `POST` | `/api/auth/login` | Authenticate user |
+| `POST` | `/api/auth/logout` | Invalidate session |
+| `GET` | `/api/auth/me` | Current user profile |
+| `GET` | `/api/auth/config` | OIDC configuration |
+| `GET` | `/api/auth/providers` | Available identity providers |
+| `GET` | `/api/auth/personas` | Available personas |
+| `GET` | `/api/storage/requests` | List access requests |
+| `POST` | `/api/storage/requests` | Submit access requests |
+| `POST` | `/api/storage/requests/{id}/approve` | Approve request |
+| `POST` | `/api/storage/requests/{id}/reject` | Reject request |
+| `GET` | `/api/catalogs` | List registered catalogs |
+| `GET` | `/api/audit/log` | View audit trail |
+| `GET` | `/health` | Health check |
 
 ## Related Guides
 
-- SmallRye Health ([guide](https://quarkus.io/guides/smallrye-health)): Monitor service health
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Validate object properties (field, getter) and method parameters for your beans (REST, CDI, Jakarta Persistence)
-- SmallRye OpenAPI ([guide](https://quarkus.io/guides/openapi-swaggerui)): Document your REST APIs with OpenAPI - comes with Swagger UI
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- REST Client ([guide](https://quarkus.io/guides/rest-client)): Call REST services
-- Micrometer Registry Prometheus ([guide](https://quarkus.io/guides/micrometer)): Enable Prometheus support for Micrometer
-
-## Provided Code
-
-### REST Client
-
-Invoke different services through REST with JSON
-
-[Related guide section...](https://quarkus.io/guides/rest-client)
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
-### SmallRye Health
-
-Monitor your application's health using SmallRye Health
-
-[Related guide section...](https://quarkus.io/guides/smallrye-health)
+- [Quarkus OIDC](https://quarkus.io/guides/security-oidc-code-flow-authentication)
+- [SmallRye JWT](https://quarkus.io/guides/security-jwt)
+- [SmallRye Health](https://quarkus.io/guides/smallrye-health)
+- [SmallRye OpenAPI](https://quarkus.io/guides/openapi-swaggerui)
+- [Hibernate ORM with Panache](https://quarkus.io/guides/hibernate-orm-panache)

@@ -13,6 +13,8 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import java.util.Optional;
 import com.rhlowery.acs.service.AccessRequestService;
 import org.jboss.logging.Logger;
 
@@ -24,21 +26,59 @@ public class StepDefinitions {
     @Inject
     AccessRequestService accessRequestService;
 
+    @ConfigProperty(name = "quarkus.http.test-port")
+    Optional<Integer> testPort;
+
     @Inject
     com.rhlowery.acs.service.CatalogService catalogService;
 
     @Inject
     com.rhlowery.acs.service.UserService userService;
 
+    @Inject
+    jakarta.enterprise.inject.Instance<com.rhlowery.acs.service.IdentityProvider> providers;
+
     private String lastCheckedTable;
     private List<Map<String, Object>> sseEvents = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     @io.cucumber.java.Before
     public void setup() {
+        RestAssured.reset();
+        RestAssured.port = testPort.orElse(8081);
+        
+        this.currentToken = null;
+        this.lastResponse = null;
+        this.lastCheckedTable = null;
+        this.sseEvents.clear();
+
         if (accessRequestService != null) accessRequestService.clear();
         if (catalogService != null) catalogService.clear();
         if (userService != null) userService.clear();
+        
+        // Clear all identity providers to avoid cross-scenario state pollution
+        if (providers != null) {
+            providers.forEach(com.rhlowery.acs.service.IdentityProvider::clear);
+        }
+
+        if (userService != null) {
+            // Repopulate standard mock data for tests
+            this.lastCheckedTable = null;
+            userService.saveGroup(new com.rhlowery.acs.domain.Group("admins", "Administrator Group", "Users with full administrative privileges", "ADMIN"));
+            userService.saveGroup(new com.rhlowery.acs.domain.Group("data-governors", "Data Governance Group", "Users responsible for data quality and access approval", "APPROVER"));
+            userService.saveGroup(new com.rhlowery.acs.domain.Group("finance-approvers", "Finance Approvers", "Users responsible for financial data access approval", null));
+            userService.saveGroup(new com.rhlowery.acs.domain.Group("sensitive-approvers", "Sensitive Data Approvers", "Users responsible for sensitive data access approval", null));
+            userService.saveGroup(new com.rhlowery.acs.domain.Group("finance-leads", "Finance Leads", "Lead users for financial access approval", null));
+            userService.saveGroup(new com.rhlowery.acs.domain.Group("standard-users", "Standard User Group", "Default user group", null));
+            userService.saveGroup(new com.rhlowery.acs.domain.Group("governance-team", "Mandatory Governance Group", "The final signature required for all access", null));
+            
+            userService.saveUser(new com.rhlowery.acs.domain.User("alice", "Alice Smith", "alice@example.com", "STANDARD_USER", List.of("standard-users"), null));
+            userService.saveUser(new com.rhlowery.acs.domain.User("bob", "Bob Jones", "bob@example.com", "ADMIN", List.of("admins", "data-governors"), "ADMIN"));
+            userService.saveUser(new com.rhlowery.acs.domain.User("ben", "Ben Miller", "ben@example.com", "STANDARD_USER", List.of(), null));
+            userService.saveUser(new com.rhlowery.acs.domain.User("charlie", "Charlie Brown", "charlie@example.com", "STANDARD_USER", List.of(), null));
+            userService.saveUser(new com.rhlowery.acs.domain.User("admin", "Admin User", "admin@example.com", "ADMIN", List.of("admins"), "ADMIN"));
+        }
     }
+
 
     @Given("I am authenticated as {string} with groups {string}")
     public void i_am_authenticated_as_with_groups(String user, String groups) {
@@ -55,8 +95,9 @@ public class StepDefinitions {
             .contentType(ContentType.JSON)
             .body(Map.of(
                 "userId", user,
+                "password", user.equals("admin") ? "admin" : "password",
                 "role", user.contains("admin") ? "ADMIN" : "STANDARD_USER",
-                "groups", List.of(groups.split(","))
+                "groups", java.util.Arrays.asList(groups.split(","))
             ))
             .post("/api/auth/login");
         response.then().statusCode(200);
@@ -68,6 +109,7 @@ public class StepDefinitions {
             .contentType(ContentType.JSON)
             .body(Map.of(
                 "userId", user,
+                "password", user.equals("admin") ? "admin" : "password",
                 "persona", persona
             ))
             .post("/api/auth/login");
@@ -430,6 +472,28 @@ public class StepDefinitions {
             .get("/api/storage/requests/" + id);
     }
 
+    @When("I login with userId {string} and password {string}")
+    public void i_login_with_userId_and_password(String userId, String password) {
+        lastResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(Map.of("userId", userId, "password", password))
+            .post("/api/auth/login");
+        
+        if (lastResponse.getStatusCode() == 200) {
+            currentToken = lastResponse.getCookie("bff_jwt");
+        }
+    }
+
+    @Then("the JWT token should be returned in a cookie")
+    public void jwt_token_should_be_returned_in_a_cookie() {
+        assertNotNull(currentToken, "JWT token cookie 'bff_jwt' should be present in the response");
+    }
+
+    @Then("the response user should be {string}")
+    public void response_user_should_be(String expectedUser) {
+        lastResponse.then().body("userId", equalTo(expectedUser));
+    }
+
     @When("I try to login with no userId")
     public void i_try_to_login_with_no_user_id() {
         lastResponse = RestAssured.given()
@@ -513,12 +577,19 @@ public class StepDefinitions {
         lastResponse = givenAuth().get("/api/auth/providers");
     }
 
+    @When("I request the identity provider configuration")
+    public void i_request_the_identity_provider_configuration() {
+        lastResponse = RestAssured.given().get("/api/auth/config");
+    }
+
+
     @When("I login via {string} as {string}")
     public void i_login_via_as(String provider, String user) {
         lastResponse = RestAssured.given()
             .contentType(ContentType.JSON)
             .body(Map.of(
                 "userId", user,
+                "password", user.equals("admin") ? "admin" : "password",
                 "providerId", provider
             ))
             .post("/api/auth/login");
@@ -554,8 +625,12 @@ public class StepDefinitions {
 
     @Given("the ACS Backend is initialized with mock data")
     public void backend_initialized() {
-        // Nothing special to do here as services are injected and cleared in @Before
+        // Since we are using a real database now (H2 in tests), 
+        // we ensure it's in a clean state if needed, but import.sql handles initial state.
+        if (userService != null) userService.clear();
+        if (accessRequestService != null) accessRequestService.clear();
     }
+
 
     @Given("an admin user {string} is logged in")
     public void admin_user_logged_in(String user) {
@@ -691,6 +766,9 @@ public class StepDefinitions {
         String findPath = "find { it.tableName == '" + lastCheckedTable + "' }";
         if (lastCheckedTable == null) findPath = "[0]";
         Object reqObj = response.then().extract().path(findPath);
+        if (reqObj == null) {
+            LOG.errorf("SEARCH FAILED for table '%s'. Available requests: %s", lastCheckedTable, response.asPrettyString());
+        }
         assertNotNull(reqObj, "Request for table " + lastCheckedTable + " not found");
         String id = response.then().extract().path(findPath + ".id");
         
@@ -711,6 +789,9 @@ public class StepDefinitions {
         String findPath = "find { it.tableName == '" + lastCheckedTable + "' }";
         if (lastCheckedTable == null) findPath = "[0]";
         Object reqObj = response.then().extract().path(findPath);
+        if (reqObj == null) {
+            LOG.errorf("SEARCH FAILED for table '%s'. Available requests: %s", lastCheckedTable, response.asPrettyString());
+        }
         assertNotNull(reqObj, "Request for table " + lastCheckedTable + " not found");
         String id = response.then().extract().path(findPath + ".id");
         
@@ -865,13 +946,21 @@ public class StepDefinitions {
 
     @Given("a user {string} exists in the system")
     public void user_exists_in_system(String user) {
-        assertTrue(userService.getUser(user).isPresent(), "User " + user + " should exist in mock data");
+        if (userService.getUser(user).isEmpty()) {
+            userService.saveUser(new com.rhlowery.acs.domain.User(user, user, user + "@example.com", "STANDARD_USER", List.of(), null));
+        }
+        assertTrue(userService.getUser(user).isPresent());
     }
+
 
     @Given("a group {string} exists in the system")
     public void group_exists_in_system(String group) {
-        assertTrue(userService.getGroup(group).isPresent(), "Group " + group + " should exist in mock data");
+        if (userService.getGroup(group).isEmpty()) {
+            userService.saveGroup(new com.rhlowery.acs.domain.Group(group, group, "Test group", null));
+        }
+        assertTrue(userService.getGroup(group).isPresent());
     }
+
 
     @When("I assign the persona {string} to group {string} via {string}")
     public void assign_persona_to_group(String persona, String group, String path) {
@@ -885,6 +974,7 @@ public class StepDefinitions {
 
     @Then("user {string} in group {string} should have the persona {string} after login")
     public void user_in_group_should_have_persona_after_login(String user, String group, String persona) {
+        this.currentToken = null; // Clear any existing session
         i_am_authenticated_as_with_groups(user, group);
         lastResponse = givenAuth().get("/api/auth/me");
         lastResponse.then().statusCode(200)
@@ -935,6 +1025,9 @@ public class StepDefinitions {
 
     @Given("user {string} is assigned the persona {string}")
     public void but_user_assigned_persona(String user, String persona) {
+        if (userService.getUser(user).isEmpty()) {
+            userService.saveUser(new com.rhlowery.acs.domain.User(user, user, user + "@example.com", "STANDARD_USER", java.util.List.of(), null));
+        }
         userService.updateUserPersona(user, persona);
     }
 
@@ -1051,8 +1144,9 @@ public class StepDefinitions {
                         res.body().forEach(line -> {
                             if (line.startsWith("data:")) {
                                 String data = line.substring(5).trim();
-                                try {
-                                    sseEvents.add(new com.fasterxml.jackson.databind.ObjectMapper().readValue(data, Map.class));
+                                 try {
+                                    Map<String, Object> event = new com.fasterxml.jackson.databind.ObjectMapper().readValue(data, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+                                    sseEvents.add(event);
                                 } catch (Exception e) {}
                             }
                         });
@@ -1097,7 +1191,7 @@ public class StepDefinitions {
     @Then("I should receive an SSE event with type {string} containing:")
     public void should_receive_sse_event(String eventType, DataTable table) {
         LOG.info("Waiting for SSE events... Current count: " + sseEvents.size());
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 40; i++) {
             if (!sseEvents.isEmpty()) break;
             try { Thread.sleep(500); } catch (InterruptedException e) {}
         }

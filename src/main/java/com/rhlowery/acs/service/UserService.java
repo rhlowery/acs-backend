@@ -56,5 +56,10 @@ public interface UserService {
      * @return The updated group.
      */
     Group updateGroupPersona(String groupId, String persona);
+    
+    User saveUser(User user);
+    Group saveGroup(Group group);
+    
     void clear();
 }
+

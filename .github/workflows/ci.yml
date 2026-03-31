@@ -10,6 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+
     steps:
     - uses: actions/checkout@v4
     
@@ -20,17 +25,21 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build and Test
-      run: ./mvnw clean verify
+    - name: Build, Test and Site
+      run: ./mvnw clean verify site -Dquarkus.analytics.disabled=true
 
     - name: JaCoCo Report Summary
       run: |
         echo "## JaCoCo Coverage Report" >> $GITHUB_STEP_SUMMARY
-        # Extract coverage from JaCoCo CSV if available
         if [ -f target/site/jacoco/jacoco.csv ]; then
           COVERAGE=$(awk -F, 'NR>1 {sum+=$4; sum2+=$5} END {print sum2/(sum+sum2)*100}' target/site/jacoco/jacoco.csv | cut -d. -f1)
           echo "Line Coverage: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
         fi
+
+    - name: Upload Maven Site
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: target/site/
 
     - name: Upload JaCoCo report
       if: always()
@@ -40,10 +49,25 @@ jobs:
         path: target/site/jacoco/
 
     - name: Package Application
-      run: ./mvnw package -DskipTests
+      run: ./mvnw package -DskipTests -Dquarkus.analytics.disabled=true
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
         name: acs-backend-runner
         path: target/quarkus-app/
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

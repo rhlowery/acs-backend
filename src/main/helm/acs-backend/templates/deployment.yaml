@@ -32,6 +32,22 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- if .Values.postgresql.waitOnStart }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: {{ .Values.postgresql.image | quote }}
+          command:
+            - /bin/sh
+            - -c
+            - |-
+              echo "Waiting for PostgreSQL ({{ .Values.global.postgresql.host | default .Values.postgresql.host }}:5432) to be ready..."
+              until nc -zv {{ .Values.global.postgresql.host | default .Values.postgresql.host }} 5432; do
+                echo "PostgreSQL is not ready yet, sleeping..."
+                sleep 2
+              done
+              echo "PostgreSQL is ready!"
+{{- end }}
+
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
@@ -48,10 +64,23 @@ spec:
             - configMapRef:
                 name: {{ include "acs-backend.fullname" . }}-config
           env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "acs-backend.fullname" . }}-auth
+                  key: db-password
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "acs-backend.fullname" . }}-auth
+                  key: oidc-secret
+            {{- if .Values.security.pemKeysEnabled }}
             - name: SMALLRYE_JWT_SIGN_KEY_LOCATION
-              value: "/deployments/keys/privateKey.pem"
+              value: "file:/deployments/keys/privateKey.pem"
             - name: MP_JWT_VERIFY_PUBLICKEY_LOCATION
-              value: "/deployments/keys/publicKey.pem"
+              value: "file:/deployments/keys/publicKey.pem"
+            {{- end }}
+
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
@@ -65,16 +94,22 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.security.pemKeysEnabled }}
             - name: jwt-keys
               mountPath: "/deployments/keys"
               readOnly: true
+            {{- end }}
+
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
+        {{- if .Values.security.pemKeysEnabled }}
         - name: jwt-keys
           secret:
             secretName: {{ include "acs-backend.fullname" . }}-keys
+        {{- end }}
+
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -8,3 +8,7 @@ data:
   DATABRICKS_API_MP_REST_URL: {{ .Values.appConfig.databricksUrl | quote }}
   QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.appConfig.otelEndpoint | quote }}
   QUARKUS_OTEL_RESOURCE_ATTRIBUTES: "deployment.environment={{ .Values.appConfig.environment }}"
+  DB_URL: "jdbc:postgresql://{{ .Values.global.postgresql.host | default .Values.postgresql.host }}:5432/{{ .Values.global.postgresql.database | default .Values.postgresql.database }}"
+  DB_USERNAME: {{ .Values.postgresql.username | quote }}
+  OIDC_AUTH_SERVER_URL: {{ .Values.global.oidc.authServerUrl | default .Values.oidc.authServerUrl | quote }}
+  OIDC_CLIENT_ID: {{ .Values.oidc.clientId | quote }}

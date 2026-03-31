@@ -36,4 +36,9 @@ public interface IdentityProvider {
      * @return List of groups the user belongs to.
      */
     List<String> getGroups(String userId);
+
+    /**
+     * Resets the provider state (for tests).
+     */
+    default void clear() {}
 }
